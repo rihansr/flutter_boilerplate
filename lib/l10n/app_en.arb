@@ -1,0 +1,107 @@
+{
+    "@_TITLES": "<-----------------TITLES----------------->",
+    "appName": "Boilerplate",
+    "@_LABELS": "<-----------------LABELS----------------->",
+    "price": "{amount}",
+    "@price": {
+        "placeholders": {
+            "amount": {
+                "type": "double",
+                "format": "currency",
+                "example": "৳100.00",
+                "description": "Price of the Food",
+                "optionalParameters": {
+                    "decimalDigits": 2,
+                    "name": "BDT",
+                    "symbol": "৳",
+                    "customPattern": "¤#0.00"
+                }
+            }
+        }
+    },
+    "rating": "★",
+    "retry": "Retry",
+    "okay": "Okay",
+    "viewAll": "View All  ❯",
+    "@_HINTS": "<-----------------HINTS----------------->",
+    "dummyPhone": "+880**********",
+    "dummyEmail": "johndoe@example.com",
+    "dummyPassword": "********",
+    "cardNumberHint": "1234 5678 9012 3456",
+    "expirationDateHint": "01/40",
+    "cvvHint": "1234",
+    "cardHolderHint": "John Doe",
+    "@_MESSAGES": "<-----------------MESSAGES----------------->",
+    "emptyField": "{field, select, null{Field} other {{field}}} is required",
+    "@emptyField": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            }
+        }
+    },
+    "inputLengthError": "{field, select, null{Field} other {{field}}} must be {min}-{max} characters long",
+    "@inputLengthError": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            },
+            "min": {
+                "type": "int"
+            }
+            },
+            "max": {
+                "type": "int"
+            }
+        },    
+    "inputMinLengthError": "{field, select, null{Field} other {{field}}} must have at least {min} characters",
+    "@inputMinLengthError": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            },
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "inputMaxLengthError": "{field, select, null{Field} other {{field}}} can contain up to {max} characters",
+    "@inputMaxLengthError": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "inputMaxValueError": "{field, select, null{Field} other {{field}}} max limit {value}",
+    "@inputMaxValueError": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            },
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "fieldNotMatch": "{field, select, null{Field} other {{field}}} doesn't match",
+    "@fieldNotMatch": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            }
+        }
+    },
+    "notValidField": "Enter a valid {field, select, null{Field} other {{field}}}",
+    "@notValidField": {
+        "placeholders": {
+            "field": {
+                "type": "String"
+            }
+        }
+    },
+    "someErrorOccured": "Some Error Occured!"
+}
