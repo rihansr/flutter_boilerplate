@@ -1,9 +1,6 @@
+import 'package:boilerplate/configs/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
-import '../services/navigation_service.dart';
-import '../viewmodels/theming_viewmodel.dart';
-
 class ColorPalette {
   Color primary;
   Color primaryLight;
@@ -88,7 +85,7 @@ class ColorPalette {
       );
 
   factory ColorPalette.current([BuildContext? context]) =>
-      Provider.of<ThemeViewModel>(context ?? navigator.context).isDark
+      appSettings.isDarkTheme
           ? ColorPalette.dark()
           : ColorPalette.light();
 }

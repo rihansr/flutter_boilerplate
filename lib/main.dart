@@ -1,10 +1,17 @@
-import 'package:boilerplate/shared/strings.dart';
+import 'package:boilerplate/configs/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+import 'configs/provider_config.dart';
+import 'configs/theme_config.dart';
+import 'routes/route_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'models/settings_model.dart';
+import 'routes/routes.dart';
 import 'services/navigation_service.dart';
 import 'shared/constants.dart';
-import 'shared/styles.dart';
+import 'shared/shared_prefs.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,68 +19,64 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await sharedPrefs.init();
   await Future.delayed(const Duration(seconds: kSplashDelayInSec), () {});
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigator.navigatorKey,
-      title: 'Boilerplate',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(string.appName)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-              style: style.textTheme.bodyLarge,
+    return MultiProvider(
+      providers: providers,
+      child: ValueListenableBuilder(
+        valueListenable: appSettings.settings,
+        builder: (context, Settings settings, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle(settings.themeMode),
+          child: MaterialApp(
+            navigatorKey: navigator.navigatorKey,
+            locale: settings.locale,
+            debugShowCheckedModeBanner: false,
+            title: 'Boilerplate',
+            themeMode: settings.themeMode,
+            theme: theming(ThemeMode.light),
+            darkTheme: theming(ThemeMode.dark),
+            builder: (context, widget) => ResponsiveWrapper.builder(
+              widget,
+              maxWidth: 1024,
+              minWidth: 280,
+              defaultScale: true,
+              breakpoints: [
+                const ResponsiveBreakpoint.resize(280,
+                    name: MOBILE, scaleFactor: .725),
+                const ResponsiveBreakpoint.autoScale(280,
+                    name: MOBILE, scaleFactor: .725),
+                const ResponsiveBreakpoint.resize(320,
+                    name: MOBILE, scaleFactor: .725),
+                const ResponsiveBreakpoint.autoScale(320,
+                    name: MOBILE, scaleFactor: .725),
+                const ResponsiveBreakpoint.resize(480, name: MOBILE),
+                const ResponsiveBreakpoint.autoScale(480, name: MOBILE),
+                const ResponsiveBreakpoint.resize(540, name: TABLET),
+                const ResponsiveBreakpoint.autoScale(540, name: TABLET),
+                const ResponsiveBreakpoint.resize(768,
+                    name: TABLET, scaleFactor: 1.25),
+                const ResponsiveBreakpoint.autoScale(768,
+                    name: TABLET, scaleFactor: 1.25),
+                const ResponsiveBreakpoint.resize(1024,
+                    name: DESKTOP, scaleFactor: 1.25),
+                const ResponsiveBreakpoint.autoScale(1024,
+                    name: DESKTOP, scaleFactor: 1.25),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            initialRoute: Routes.intro,
+            onGenerateRoute: RouterCustom.generateRoute,
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

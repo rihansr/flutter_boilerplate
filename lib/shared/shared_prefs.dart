@@ -1,17 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '/models/settings_model.dart';
 
 final sharedPrefs = SharedPrefs();
 
 class SharedPrefs {
   static late SharedPreferences _sharedPrefs;
 
-  static const String _themeKey = "sp_themeKeys";
+  static const String _settingsKey = "sp_settings_key";
 
   init() async => _sharedPrefs = await SharedPreferences.getInstance();
 
-  // Theming
-  set themeMode(ThemeMode mode) => _sharedPrefs.setString(_themeKey, mode.name);
-  ThemeMode get themeMode => ThemeMode.values
-      .byName(_sharedPrefs.getString(_themeKey) ?? ThemeMode.system.name);
+  // Settings
+  set settings(Settings settings) =>
+      _sharedPrefs.setString(_settingsKey, json.encode(settings.toJson()));
+  Settings get settings => _sharedPrefs.getString(_settingsKey) == null
+      ? const Settings()
+      : Settings.fromJson(json.decode(_sharedPrefs.getString(_settingsKey)!));
 }
