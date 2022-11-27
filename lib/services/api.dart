@@ -18,41 +18,37 @@ class Api {
   Api._();
 
   Future<dynamic> call({
-    Map<String, String>? headers,
-    Map<String, String>? additionalHeaders,
-    String? token,
-    dynamic userId,
-    required Method method,
     required var endpoint,
+    required Method method,
+        var body,
+    Map<String, String>? headers,
     String? contentType,
     bool supportContentType = true,
-    var body,
+    String? token,
     dynamic id,
     String? query,
-    enableEncoding = false,
+    enableEncoding = true,
   }) async {
     var apiEndpoint = buildEndpoint(endpoint: endpoint, id: id, query: query);
 
-    Map<String, String> apiHeaders = headers ??
-        buildHeaders(
-          token: token,
-          contentType: contentType,
-          supportContentType: supportContentType,
-        );
-
-    if (additionalHeaders != null) apiHeaders.addAll(additionalHeaders);
+    headers ??= buildHeaders(
+      token: token,
+      contentType: contentType,
+      supportContentType: supportContentType,
+    );
 
     try {
       http.Response httpResponse;
 
       switch (method) {
         case Method.post:
+        
           httpResponse = await http.Client().post(
             Uri.parse(apiEndpoint),
             body: body != null
                 ? (enableEncoding ? jsonEncode(body) : body)
                 : null,
-            headers: apiHeaders,
+            headers: headers,
             encoding: Encoding.getByName("utf-8"),
           );
           break;
@@ -62,7 +58,7 @@ class Api {
             body: body != null
                 ? (enableEncoding ? jsonEncode(body) : body)
                 : null,
-            headers: apiHeaders,
+            headers: headers,
           );
           break;
         case Method.delete:
@@ -71,26 +67,25 @@ class Api {
             body: body != null
                 ? (enableEncoding ? jsonEncode(body) : body)
                 : null,
-            headers: apiHeaders,
+            headers: headers,
             encoding: Encoding.getByName("utf-8"),
           );
           break;
         default:
           httpResponse = await http.Client().get(
             Uri.parse(apiEndpoint),
-            headers: apiHeaders,
+            headers: headers,
           );
           break;
       }
 
       return httpResponse;
     } on SocketException {
-      showMessage("Please check your intenet connection",
+      showMessage(string.someErrorOccured,
           type: MessageType.error);
       return null;
     } catch (e) {
-      debug.print(e.toString(), boundedText: "API EXCEPTION");
-      showMessage("Something went wrong", type: MessageType.error);
+      showMessage(string.someErrorOccured, type: MessageType.error);
       return null;
     }
   }
@@ -197,6 +192,7 @@ class Api {
 
   void showMessage(
     var response, {
+      String? tag,
     String? orElse,
     String? actionLabel,
     dynamic Function()? onAction,
@@ -226,6 +222,8 @@ class Api {
         message = string.someErrorOccured;
       }
     }
+
+          debug.print(message, boundedText: tag ?? "Response Message");
 
     if (showToast) {
       style.toast(message, type: type);
