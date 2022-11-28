@@ -7,7 +7,6 @@ import 'configs/provider_config.dart';
 import 'configs/theme_config.dart';
 import 'routes/route_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'models/settings_model.dart';
 import 'routes/routes.dart';
 import 'services/navigation_service.dart';
 import 'shared/constants.dart';
@@ -33,7 +32,8 @@ class MyApp extends StatelessWidget {
       providers: providers,
       child: ValueListenableBuilder(
         valueListenable: appSettings.settings,
-        builder: (context, Settings settings, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        builder: (context, settings, child) =>
+            AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle(settings.themeMode),
           child: MaterialApp(
             navigatorKey: navigator.navigatorKey,
@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
             ),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            initialRoute: Routes.intro,
+            initialRoute: Routes.dashboard,
             onGenerateRoute: RouterCustom.generateRoute,
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart' as svg;
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../configs/theme_config.dart';
 import '../services/navigation_service.dart';
 import '../shared/strings.dart';
 import 'drawables.dart';
@@ -15,12 +16,7 @@ class Style {
   static Style get value => Style._();
   Style._();
 
-  ThemeData theme = Theme.of(navigator.context);
-  TextTheme textTheme = Theme.of(navigator.context).textTheme;
-  IconThemeData iconTheme = Theme.of(navigator.context).iconTheme;
-  ColorScheme colorScheme = Theme.of(navigator.context).colorScheme;
   MediaQueryData mediaQuery = MediaQuery.of(navigator.context);
-  Size size = MediaQuery.of(navigator.context).size;
 
   SnackBar snackBarStyle(
     String message, {
@@ -42,7 +38,9 @@ class Style {
         }()),
         content: Text(
           message,
-          style: textTheme.bodyText2!.copyWith(color: theme.primaryColorLight),
+          style: themeConfig.textTheme.bodyText2!.copyWith(
+            color: themeConfig.theme.primaryColorLight,
+          ),
         ),
         action: (onAction != null)
             ? SnackBarAction(
@@ -50,12 +48,12 @@ class Style {
                     (() {
                       switch (type) {
                         case MessageType.error:
-                          return string.retry;
+                          return string().retry;
                         default:
-                          return string.okay;
+                          return string().okay;
                       }
                     }()),
-                textColor: theme.primaryColorLight,
+                textColor: themeConfig.theme.primaryColorLight,
                 onPressed: onAction,
               )
             : null,

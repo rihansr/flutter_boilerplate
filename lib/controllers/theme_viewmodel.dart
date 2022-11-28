@@ -1,48 +1,47 @@
-import 'package:boilerplate/models/settings_model.dart';
+import 'package:boilerplate/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
+import '../models/settings_model.dart';
 import '../shared/shared_prefs.dart';
 
-final AppSettings appSettings = AppSettings.value;
+ThemeViewModel themeViewModel({BuildContext? context, listen = true}) =>
+    Provider.of<ThemeViewModel>(context ?? navigator.context, listen: listen);
 
-class AppSettings {
-  static AppSettings get value => AppSettings._();
-  AppSettings._();
-
-  ValueNotifier<Settings> settings = ValueNotifier(sharedPrefs.settings);
+class ThemeViewModel extends ChangeNotifier {
+  Settings settings = sharedPrefs.settings;
 
   set _settings(Settings settings) {
-    this.settings.value = settings;
+    this.settings = settings;
     sharedPrefs.settings = settings;
-    // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-    this.settings.notifyListeners();
+    notifyListeners();
   }
 
   // Theme
   set theme(dynamic mode) {
     if (mode == null) return;
-    _settings = settings.value.copyWith(
+    _settings = settings.copyWith(
       themeMode: mode is ThemeMode ? mode : ThemeMode.values.byName('$mode'),
     );
   }
 
   bool isDarkTheme([Settings? settings]) =>
-      (settings ?? this.settings.value).themeMode == ThemeMode.system
+      (settings ?? this.settings).themeMode == ThemeMode.system
           ? SchedulerBinding.instance.window.platformBrightness ==
               Brightness.dark
-          : (settings ?? this.settings.value).themeMode == ThemeMode.dark;
+          : (settings ?? this.settings).themeMode == ThemeMode.dark;
 
   get switchTheme => theme = isDarkTheme() ? ThemeMode.light : ThemeMode.dark;
 
   // Locale
   set language(dynamic locale) {
     if (locale == null) return;
-    _settings = settings.value.copyWith(
+    _settings = settings.copyWith(
       locale: locale is Locale ? locale : Locale('$locale', ''),
     );
   }
 
-  bool get isEnglish => settings.value.locale.languageCode == 'en';
+  bool get isEnglish => settings.locale.languageCode == 'en';
 
   get switchLanguage => language = isEnglish ? 'bn' : 'en';
 }

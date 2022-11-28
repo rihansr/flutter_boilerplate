@@ -20,7 +20,7 @@ class Api {
   Future<dynamic> call({
     required var endpoint,
     required Method method,
-        var body,
+    var body,
     Map<String, String>? headers,
     String? contentType,
     bool supportContentType = true,
@@ -42,7 +42,6 @@ class Api {
 
       switch (method) {
         case Method.post:
-        
           httpResponse = await http.Client().post(
             Uri.parse(apiEndpoint),
             body: body != null
@@ -81,11 +80,10 @@ class Api {
 
       return httpResponse;
     } on SocketException {
-      showMessage(string.someErrorOccured,
-          type: MessageType.error);
+      showMessage(string().someErrorOccured, type: MessageType.error);
       return null;
     } catch (e) {
-      showMessage(string.someErrorOccured, type: MessageType.error);
+      showMessage(string().someErrorOccured, type: MessageType.error);
       return null;
     }
   }
@@ -192,7 +190,7 @@ class Api {
 
   void showMessage(
     var response, {
-      String? tag,
+    String? tag,
     String? orElse,
     String? actionLabel,
     dynamic Function()? onAction,
@@ -215,15 +213,15 @@ class Api {
                 ? data['message']
                 : data.containsKey('errors')
                     ? data['errors'].toString()
-                    : orElse ?? string.someErrorOccured;
+                    : orElse ?? string().someErrorOccured;
       } else if (data is String) {
         message = data;
       } else {
-        message = string.someErrorOccured;
+        message = string().someErrorOccured;
       }
     }
 
-          debug.print(message, boundedText: tag ?? "Response Message");
+    debug.print(message, boundedText: tag ?? "Response Message");
 
     if (showToast) {
       style.toast(message, type: type);
@@ -234,9 +232,9 @@ class Api {
             (() {
               switch (type) {
                 case MessageType.info:
-                  return string.okay;
+                  return string().okay;
                 case MessageType.error:
-                  return string.retry;
+                  return string().retry;
                 default:
                   return null;
               }
@@ -269,7 +267,7 @@ class Api {
               data['success']
                   ? null
                   : data['data'] ??
-                      (data['message'] ?? string.someErrorOccured),
+                      (data['message'] ?? string().someErrorOccured),
               type: MessageType.error);
           return data['success'] ? data : null;
         } else {
@@ -294,7 +292,7 @@ class Api {
           showMessage(response, type: MessageType.error);
         } else {
           showMessage(response,
-              orElse: string.someErrorOccured, type: MessageType.error);
+              orElse: string().someErrorOccured, type: MessageType.error);
         }
       }
       return null;

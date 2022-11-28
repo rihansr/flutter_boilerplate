@@ -1,5 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import '../controllers/dashboard_viewmodel.dart';
 import '../services/api.dart';
 
 List<SingleChildWidget> providers = [
@@ -12,7 +13,7 @@ List<SingleChildWidget> independentService = [
 ];
 
 List<SingleChildWidget> universalService = [
-  /* ChangeNotifierProvider<DashboardViewModel>(
+  ChangeNotifierProvider<DashboardViewModel>(
     create: (context) => DashboardViewModel(),
-  ), */
+  ),
 ];

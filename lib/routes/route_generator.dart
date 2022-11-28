@@ -1,6 +1,8 @@
 import 'package:boilerplate/routes/routes.dart';
 import 'package:flutter/material.dart';
 
+import '../views/dashboard_view.dart';
+
 class RouterCustom {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
@@ -12,14 +14,14 @@ class RouterCustom {
           settings: const RouteSettings(name: Routes.splash),
         ); */
 
-    /*  case Routes.dashboard:
+      case Routes.dashboard:
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const DashboardView(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
           settings: const RouteSettings(name: Routes.dashboard),
-        ); */
+        );
 
       default:
         return MaterialPageRoute(

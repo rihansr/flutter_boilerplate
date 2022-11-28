@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/models/settings_model.dart';
 
-final sharedPrefs = SharedPrefs();
+final sharedPrefs = SharedPrefs.value;
 
 class SharedPrefs {
-  static late SharedPreferences _sharedPrefs;
+  static SharedPrefs get value => SharedPrefs._();
+  SharedPrefs._();
 
-  static const String _settingsKey = "sp_settings_key";
+  late SharedPreferences _sharedPrefs;
 
   init() async => _sharedPrefs = await SharedPreferences.getInstance();
+
+  static const String _settingsKey = "settings_sp_key";
 
   // Settings
   set settings(Settings settings) =>

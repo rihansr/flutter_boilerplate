@@ -1,6 +1,8 @@
 import 'package:boilerplate/configs/app_settings.dart';
+import 'package:boilerplate/models/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+
 class ColorPalette {
   Color primary;
   Color primaryLight;
@@ -84,8 +86,8 @@ class ColorPalette {
         error: const Color(0xFFFF5421),
       );
 
-  factory ColorPalette.current([BuildContext? context]) =>
-      appSettings.isDarkTheme
+  factory ColorPalette.current([Settings? settings]) =>
+      appSettings.isDarkTheme(settings)
           ? ColorPalette.dark()
           : ColorPalette.light();
 }

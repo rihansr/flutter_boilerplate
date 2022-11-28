@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/navigation_service.dart';
 import '../shared/colors.dart';
 import '../shared/constants.dart';
-import '../shared/dimens.dart';
+
+final themeConfig = ThemeConfig.value;
+
+class ThemeConfig {
+  static ThemeConfig get value => ThemeConfig._();
+  ThemeConfig._();
+
+  ThemeData theme = Theme.of(navigator.context);
+  TextTheme textTheme = Theme.of(navigator.context).textTheme;
+  IconThemeData iconTheme = Theme.of(navigator.context).iconTheme;
+  ColorScheme colorScheme = Theme.of(navigator.context).colorScheme;
+}
 
 ThemeData theming(ThemeMode mode) {
   ColorPalette colorPalette;
@@ -64,29 +76,29 @@ ThemeData theming(ThemeMode mode) {
     toggleableActiveColor: colorPalette.accent,
     iconTheme: IconThemeData(
       color: colorPalette.icon,
-      size: Dimen.iconSize_24,
+      size: 24,
     ),
     snackBarTheme: const SnackBarThemeData().copyWith(
       backgroundColor: colorPalette.scaffold,
       contentTextStyle: TextStyle(
-        fontSize: Dimen.fontSize_12,
+        fontSize: 12,
         color: colorPalette.primary,
         fontWeight: FontWeight.w400,
       ),
       actionTextColor: colorPalette.accent,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      elevation: Dimen.elevation_4,
+      elevation: 4,
       selectedItemColor: colorPalette.onSecondary,
       unselectedItemColor: colorPalette.onSecondary,
       backgroundColor: colorPalette.accent,
       type: BottomNavigationBarType.fixed,
       selectedLabelStyle: const TextStyle(
-        fontSize: Dimen.fontSize_12,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
       unselectedLabelStyle: const TextStyle(
-        fontSize: Dimen.fontSize_12,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
     ),
@@ -94,78 +106,78 @@ ThemeData theming(ThemeMode mode) {
       labelPadding: EdgeInsets.zero,
       labelColor: colorPalette.accent,
       labelStyle: const TextStyle(
-        fontSize: Dimen.fontSize_16,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
       unselectedLabelColor: colorPalette.subtitle,
       unselectedLabelStyle: const TextStyle(
-        fontSize: Dimen.fontSize_16,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
     ),
     textTheme: TextTheme(
       headline1: TextStyle(
-        fontSize: Dimen.fontSize_24,
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: colorPalette.text,
       ),
       headline2: TextStyle(
-        fontSize: Dimen.fontSize_20,
+        fontSize: 20,
         fontWeight: FontWeight.w700,
         color: colorPalette.text,
       ),
       headline3: TextStyle(
-        fontSize: Dimen.fontSize_18,
+        fontSize: 18,
         fontWeight: FontWeight.w700,
         color: colorPalette.text,
       ),
       headline4: TextStyle(
-        fontSize: Dimen.fontSize_16,
+        fontSize: 16,
         fontWeight: FontWeight.w700,
         color: colorPalette.text,
       ),
       headline5: TextStyle(
-        fontSize: Dimen.fontSize_16,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         color: colorPalette.text,
       ),
       headline6: TextStyle(
-        fontSize: Dimen.fontSize_14,
+        fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorPalette.text,
       ),
       bodyText1: TextStyle(
-        fontSize: Dimen.fontSize_16,
+        fontSize: 16,
         fontWeight: FontWeight.w400,
         color: colorPalette.text,
       ),
       bodyText2: TextStyle(
-        fontSize: Dimen.fontSize_14,
+        fontSize: 14,
         fontWeight: FontWeight.w400,
         color: colorPalette.text,
       ),
       subtitle1: TextStyle(
-        fontSize: Dimen.fontSize_12,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
         color: colorPalette.subtitle,
       ),
       subtitle2: TextStyle(
-        fontSize: Dimen.fontSize_11,
+        fontSize: 11,
         fontWeight: FontWeight.w400,
         color: colorPalette.subtitle,
       ),
       button: TextStyle(
-        fontSize: Dimen.fontSize_18,
+        fontSize: 18,
         fontWeight: FontWeight.w700,
         color: colorPalette.primaryLight,
       ),
       caption: TextStyle(
-        fontSize: Dimen.fontSize_14,
+        fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorPalette.primaryLight,
       ),
       overline: TextStyle(
-        fontSize: Dimen.fontSize_12,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
         color: colorPalette.subtitle,
       ),

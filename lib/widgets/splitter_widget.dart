@@ -52,7 +52,7 @@ class Splitter extends StatelessWidget {
     List<Widget> children = [
       for (int i = 0; i < this.children.length; i++)
         if (this.children.length >= i + 1) ...[
-          flexes[i] == 0
+          (flexes[i] ?? 0) == 0
               ? this.children[i]
               : Expanded(
                   flex: flexes[i] ?? 1,

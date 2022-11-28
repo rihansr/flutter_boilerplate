@@ -1,6 +1,6 @@
 {
   "@_TITLES": "<-----------------TITLES----------------->",
-  "appName": "Boilerplate",
+  "appName": "বয়লারপ্লেট",
   "@_LABELS": "<-----------------LABELS----------------->",
   "price": "{amount}",
   "@price": {
@@ -19,7 +19,7 @@
       }
     }
   },
-  "change": "Switch",
+  "change": "সুইচ",
   "rating": "★",
   "retry": "Retry",
   "okay": "Okay",

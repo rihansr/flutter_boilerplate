@@ -1,9 +1,4 @@
-final drawable = Drawable.value;
-
 class Drawable {
-  static Drawable get value => Drawable._();
-  Drawable._();
-
   /// Other
   static const placeholder = '';
   static const profilePlaceholderUrl =

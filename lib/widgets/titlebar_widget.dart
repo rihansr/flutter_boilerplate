@@ -129,7 +129,7 @@ class TitleBar extends StatelessWidget {
                       onTap: onTapTrailing,
                       child: trailingWidget ??
                           Text(
-                            trailingLabel ?? string.viewAll,
+                            trailingLabel ?? string(context).viewAll,
                             style: trailingStyle ??
                                 theme.textTheme.bodyText2!.copyWith(
                                   color: theme.colorScheme.onSecondary,
