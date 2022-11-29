@@ -1,250 +1,191 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import 'package:dio_http_cache/dio_http_cache.dart';
+import 'navigation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:dio_http_cache/dio_http_cache.dart' as dio;
+import 'package:http/http.dart' as http;
 import '../services/server_env.dart';
 import '../shared/enums.dart';
 import '../shared/strings.dart';
 import '../shared/styles.dart';
 import '../utils/debug.dart';
-import 'navigation_service.dart';
 
 final api = Api.function;
+
+enum Method { get, post, put, delete }
+
+enum InvokeType { http, dio, multipart }
 
 class Api {
   static Api get function => Api._();
   Api._();
 
-  Future<dynamic> callHttp({
-    required var endpoint,
-    required Method method,
-    var body,
-    Map<String, String>? headers,
-    Map<String, String>? additionalHeaders,
-    Duration? timeout,
-    String? contentType,
-    bool supportContentType = true,
-    String? token,
-    dynamic id,
-    String? query,
-    enableEncoding = true,
-  }) async {
-    endpoint =
-        Uri.parse(buildEndpoint(endpoint: endpoint, id: id, query: query));
-
-    (headers ??= _buildHeaders(
-      token: token,
-      contentType: contentType,
-      supportContentType: supportContentType,
-    ))
-        .addAll(additionalHeaders ?? {});
-
-    timeout ??= const Duration(seconds: 30);
-
-    try {
-      http.Response httpResponse;
-
-      switch (method) {
-        case Method.post:
-          httpResponse = await http.Client()
-              .post(
-                endpoint,
-                headers: headers,
-                body: body != null
-                    ? (enableEncoding ? jsonEncode(body) : body)
-                    : null,
-                encoding: Encoding.getByName("utf-8"),
-              )
-              .timeout(
-                timeout,
-                onTimeout: () =>
-                    throw TimeoutException(string().requestTimeout),
-              );
-          break;
-        case Method.put:
-          httpResponse = await http.Client()
-              .put(
-                endpoint,
-                headers: headers,
-                body: body != null
-                    ? (enableEncoding ? jsonEncode(body) : body)
-                    : null,
-              )
-              .timeout(
-                timeout,
-                onTimeout: () =>
-                    throw TimeoutException(string().requestTimeout),
-              );
-          break;
-        case Method.delete:
-          httpResponse = await http.Client()
-              .delete(endpoint,
-                  headers: headers,
-                  body: body != null
-                      ? (enableEncoding ? jsonEncode(body) : body)
-                      : null,
-                  encoding: Encoding.getByName("utf-8"))
-              .timeout(
-                timeout,
-                onTimeout: () =>
-                    throw TimeoutException(string().requestTimeout),
-              );
-          break;
-        default:
-          httpResponse = await http.Client()
-              .get(
-                endpoint,
-                headers: headers,
-              )
-              .timeout(
-                timeout,
-                onTimeout: () =>
-                    throw TimeoutException(string().requestTimeout),
-              );
-          break;
-      }
-
-      return httpResponse;
-    } on SocketException {
-      showMessage(string().someErrorOccured, type: MessageType.error);
-      return null;
-    } catch (e) {
-      debug.print(e.toString(), boundedText: "API EXCEPTION");
-      if (method == Method.get) {
-        showMessage(e.toString(), type: MessageType.error);
-      }
-      return null;
-    }
-  }
-
-  Future<dynamic> multipartCall({
-    BuildContext? context,
-    Map<String, String>? headers,
-    String? token,
-    String? contentType,
-    bool supportContentType = true,
-    required http.MultipartRequest requestBody,
-  }) async {
-    try {
-      requestBody.headers.addAll(headers ??
-          _buildHeaders(
-            token: token,
-            contentType: contentType,
-            supportContentType: supportContentType,
-          ));
-
-      http.StreamedResponse streamedResponse = await requestBody.send();
-      final body = await streamedResponse.stream.bytesToString();
-
-      return http.Response(body, streamedResponse.statusCode);
-    } on SocketException {
-      showMessage(string().someErrorOccured,
-          type: MessageType.error, tag: "Socket Exception");
-      return null;
-    } catch (e) {
-      showMessage(e.toString(), type: MessageType.error, tag: "Api Exception");
-      return null;
-    }
-  }
-
-  /* 
-  required var endpoint,
-    required Method method,
-    var body,
-    Map<String, String>? headers,
-    Map<String, String>? additionalHeaders,
-    Duration? timeout,
-    String? contentType,
-    bool supportContentType = true,
-    String? token,
-    dynamic id,
-    String? query,
-    enableEncoding = true,
-   */
-
-  Future<Response?> callDio({
-    required var endpoint,
+  Future<T?> invoke<T>({
+    InvokeType invokeType = InvokeType.http,
+    var endpoint,
     String? baseUrl,
-    required Method method,
+    Method method = Method.get,
     Map<String, String>? headers,
     Map<String, String>? additionalHeaders,
-    String? token,
+    Map<String, dynamic>? queryParams,
     var body,
-    dynamic id,
-    Map<String, dynamic>? query,
+    Duration? timeout,
     String? contentType,
     bool supportContentType = true,
+    String? token,
+    dynamic id,
+    bool enableEncoding = true,
+    bool justifyResponse = true,
+    bool showMessage = true,
+    Encoding? encoding,
     bool enableCaching = false,
     String? cachePrimaryKey,
     String? cacheSubKey,
     Duration? cacheDuration,
     bool? chacheForceRefresh = false,
-    bool enableEncoding = true,
   }) async {
-    endpoint = buildEndpoint(endpoint: endpoint, id: id);
+    endpoint = Uri.parse(
+        _buildEndpoint(endpoint: endpoint, id: id, query: queryParams));
 
-    (headers ??= _buildHeaders(
+    headers ??= _buildHeaders(
       token: token,
       contentType: contentType,
       supportContentType: supportContentType,
-    ))
-        .addAll(additionalHeaders ?? {});
+    )..addAll(additionalHeaders ?? {});
 
-    try {
-      Dio dio = Dio(BaseOptions(
-        method: method.name,
-        baseUrl: baseUrl ?? ServerEnv.baseUrl,
-        headers: headers,
-        validateStatus: (status) => true,
-      ))
-        ..interceptors.addAll([
-          if (enableCaching)
-            DioCacheManager(
-              CacheConfig(
-                baseUrl: baseUrl ?? ServerEnv.baseUrl,
-                defaultRequestMethod: method.name,
-              ),
-            ).interceptor,
-          LogInterceptor(
-            request: false,
-            requestHeader: false,
-            responseHeader: false,
-            error: false,
-            logPrint: (s) => {},
-          )
-        ]);
-
-      Response response = await dio
-          .request(endpoint,
-              queryParameters: query,
-              data: body != null
-                  ? (enableEncoding ? jsonEncode(body) : body)
-                  : null,
-              options: enableCaching
-                  ? buildCacheOptions(
-                      cacheDuration ?? const Duration(days: 7),
-                      primaryKey: cachePrimaryKey ?? endpoint,
-                      subKey: cacheSubKey,
-                      forceRefresh: chacheForceRefresh,
-                    )
-                  : null)
-          .onError((error, stackTrace) => throw (error.toString()));
-
-      return response;
-    } on SocketException {
-      showMessage(string().someErrorOccured,
-          type: MessageType.error, tag: "Socket Exception");
-      return null;
-    } catch (e) {
-      showMessage(e.toString(), type: MessageType.error, tag: "Api Exception");
-      return null;
+    if (body != null) {
+      body = (enableEncoding && body is! http.MultipartRequest
+          ? jsonEncode(body)
+          : body);
     }
+
+    encoding ??= enableEncoding ? utf8 : null;
+
+    timeout ??= const Duration(seconds: 20);
+
+    if (!enableCaching) enableCaching = cacheDuration != null;
+
+    T? response = await _exceptionHandler(
+      (() async {
+        switch (invokeType) {
+          case InvokeType.dio:
+            dio.Dio dioClient = dio.Dio(dio.BaseOptions(
+              method: method.name,
+              baseUrl: baseUrl ?? ServerEnv.baseUrl,
+              headers: headers,
+              validateStatus: (status) => true,
+            ))
+              ..interceptors.addAll([
+                if (enableCaching)
+                  dio.DioCacheManager(
+                    dio.CacheConfig(
+                      baseUrl: baseUrl ?? ServerEnv.baseUrl,
+                      defaultRequestMethod: method.name,
+                    ),
+                  ).interceptor,
+                dio.LogInterceptor(
+                  request: false,
+                  requestHeader: false,
+                  responseHeader: false,
+                  error: false,
+                  logPrint: (s) => {},
+                )
+              ]);
+            return await dioClient
+                .request(endpoint,
+                    queryParameters: queryParams,
+                    data: body,
+                    options: enableCaching
+                        ? dio.buildCacheOptions(
+                            cacheDuration ?? const Duration(days: 7),
+                            primaryKey: cachePrimaryKey ?? endpoint,
+                            subKey: cacheSubKey,
+                            forceRefresh: chacheForceRefresh,
+                          )
+                        : null)
+                .onError((error, stackTrace) => throw (error.toString()));
+
+          case InvokeType.multipart:
+            (body as http.MultipartRequest).headers.addAll(headers!);
+            http.StreamedResponse streamedResponse = await body.send();
+            final response = await streamedResponse.stream.bytesToString();
+            return http.Response(response, streamedResponse.statusCode);
+
+          case InvokeType.http:
+          default:
+            http.Client client = http.Client();
+            switch (method) {
+              case Method.post:
+                return await client
+                    .post(endpoint,
+                        headers: headers, body: body, encoding: encoding)
+                    .timeout(
+                      timeout!,
+                      onTimeout: () => throw TimeoutException(null),
+                    );
+              case Method.put:
+                return await client
+                    .put(endpoint,
+                        headers: headers, body: body, encoding: encoding)
+                    .timeout(
+                      timeout!,
+                      onTimeout: () => throw TimeoutException(null),
+                    );
+              case Method.delete:
+                return await client
+                    .delete(endpoint,
+                        headers: headers, body: body, encoding: encoding)
+                    .timeout(
+                      timeout!,
+                      onTimeout: () => throw TimeoutException(null),
+                    );
+              default:
+                return await client.get(endpoint, headers: headers).timeout(
+                      timeout!,
+                      onTimeout: () => throw TimeoutException(null),
+                    );
+            }
+        }
+      })(),
+      showMessage,
+    );
+
+    return justifyResponse
+        ? _justifyResponse(response, showMessage: showMessage)
+        : response;
   }
 
-  void showMessage(
+  Future<dynamic>? _exceptionHandler(Future function,
+      [showMessage = true]) async {
+    try {
+      return await function;
+    } on SocketException {
+      if (showMessage) {
+        _showMessage(string().someErrorOccured,
+            type: MessageType.error, tag: "Socket Exception");
+      } else {
+        debug.print(string().someErrorOccured, boundedText: "Socket Exception");
+      }
+    } on TimeoutException {
+      if (showMessage) {
+        _showMessage(string().requestTimeout,
+            type: MessageType.error, tag: "Timeout Exception");
+      } else {
+        debug.print(string().requestTimeout, boundedText: "Timeout Exception");
+      }
+    } catch (e) {
+      if (showMessage) {
+        _showMessage(e.toString(), type: MessageType.error, tag: "Exception");
+      } else {
+        debug.print(e.toString(), boundedText: "Exception");
+      }
+    }
+    return null;
+  }
+
+  void _showMessage(
     var response, {
     String? tag,
     String? orElse,
@@ -254,28 +195,30 @@ class Api {
     bool showToast = false,
   }) {
     if (response == null) return;
-    String message;
-    if (response is String) {
-      message = response;
-    } else {
-      var data =
-          response is Response ? response.data : jsonDecode(response.body);
-      if (data is Map) {
-        message = data.containsKey('error')
-            ? data['error'] is Map
-                ? data['error']['message']
-                : data['error']
-            : data.containsKey('message')
-                ? data['message']
-                : data.containsKey('errors')
-                    ? data['errors'].toString()
-                    : orElse ?? string().someErrorOccured;
-      } else if (data is String) {
-        message = data;
+    String message = (() {
+      if (response is String) {
+        return response;
       } else {
-        message = string().someErrorOccured;
+        var data = response is dio.Response
+            ? response.data
+            : jsonDecode(response.body);
+        if (data is Map) {
+          return data.containsKey('error')
+              ? data['error'] is Map
+                  ? data['error']['message']
+                  : data['error']
+              : data.containsKey('message')
+                  ? data['message']
+                  : data.containsKey('errors')
+                      ? data['errors'].toString()
+                      : orElse ?? string().someErrorOccured;
+        } else if (data is String) {
+          return data;
+        } else {
+          return string().someErrorOccured;
+        }
       }
-    }
+    }());
 
     debug.print(message, boundedText: tag ?? "Response Message");
 
@@ -301,83 +244,81 @@ class Api {
     }
   }
 
-  justifyResponse(
+  _justifyResponse(
     var response, {
-    bool fromAuth = false,
-    bool handleResponse = true,
+    bool showMessage = true,
   }) {
     if (response != null &&
-        (response is Response || response is http.Response)) {
+        (response is dio.Response || response is http.Response)) {
       debug.print(
-          'Status Code: ${response?.statusCode}\nData: ${response is Response ? response.data : response.body}',
+          'Status Code: ${response?.statusCode}\nData: ${response is dio.Response ? response.data : response.body}',
           boundedText: 'API');
 
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           response.statusCode == 202 ||
           response.statusCode == 409) {
-        var data =
-            response is Response ? response.data : jsonDecode(response.body);
+        var data = response is dio.Response
+            ? response.data
+            : jsonDecode(response.body);
         if (data is Map && data.containsKey('success')) {
-          showMessage(
+          if (showMessage) {
+            _showMessage(
               data['success']
                   ? null
                   : data['data'] ??
                       (data['message'] ?? string().someErrorOccured),
-              type: MessageType.error);
+              type: MessageType.error,
+            );
+          }
           return data['success'] ? data : null;
         } else {
           return data;
         }
+      } else if (showMessage) {
+        _showMessage(
+          response,
+          orElse: (() {
+            switch (response.statusCode) {
+              case 401:
+                return 'Unauthenticated';
+              case 402:
+                return "Payment Required";
+              case 400:
+                return "Bad Request";
+              case 404:
+                return 'Not Found';
+              case 424:
+                return 'Failed Dependency';
+              default:
+                return string().someErrorOccured;
+            }
+          }()),
+          type: MessageType.error,
+        );
+      } else {
+        return null;
       }
-      if (handleResponse) {
-        if (response.statusCode == 401) {
-          showMessage(response,
-              orElse: 'Unauthenticated', type: MessageType.error);
-        } else if (response.statusCode == 402) {
-          showMessage(response,
-              orElse: "Payment Required", type: MessageType.error);
-        } else if (response.statusCode == 400) {
-          showMessage(response, orElse: "Bad Request", type: MessageType.error);
-        } else if (response.statusCode == 404) {
-          showMessage(response,
-              orElse:
-                  fromAuth ? 'Could not authenticate the user' : 'Not Found',
-              type: MessageType.error);
-        } else if (response.statusCode == 424) {
-          showMessage(response, type: MessageType.error);
-        } else {
-          showMessage(response,
-              orElse: string().someErrorOccured, type: MessageType.error);
-        }
-      }
-      return null;
     } else {
       return null;
     }
   }
 
-  decode(var data) {
-    try {
-      return jsonDecode(data);
-    } catch (e) {
-      debug.print(data, boundedText: "Response.body in error!");
-      debug.print(e);
-      return null;
-    }
-  }
+  String _buildEndpoint(
+          {String? endpoint, var id, Map<String, dynamic>? query}) =>
+      '$endpoint'
+      '${id != null ? '/$id' : ''}'
+      '${(query?.isNotEmpty ?? false) ? '?${query?.entries.map((e) => '${e.key}=${e.value?.toString() ?? ''}').join('&')}' : ''}';
 
-  String buildEndpoint({String? endpoint, var id, var query}) =>
-      '$endpoint${id != null ? '/$id' : ''}${query != null ? '?$query' : ''}';
-
-  _buildHeaders(
+  Map<String, String> _buildHeaders(
           {String? token,
           String? contentType,
           bool supportContentType = true}) =>
       {
         HttpHeaders.acceptHeader: 'application/json',
         if (supportContentType)
-          HttpHeaders.contentTypeHeader: contentType ?? Headers.jsonContentType,
+          HttpHeaders.contentTypeHeader:
+              contentType ?? dio.Headers.jsonContentType,
         if (token != null) HttpHeaders.authorizationHeader: "Bearer $token"
       };
 

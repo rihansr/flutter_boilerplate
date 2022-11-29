@@ -1,3 +1,4 @@
+import 'package:boilerplate/configs/app_config.dart';
 import 'package:boilerplate/configs/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await sharedPrefs.init();
+  await appConfig.init(AppMode.test);
   await Future.delayed(const Duration(seconds: kSplashDelayInSec), () {});
   runApp(const MyApp());
 }

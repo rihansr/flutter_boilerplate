@@ -12,7 +12,7 @@ class AppConfig {
 
   late Map<String, dynamic> configs;
 
-  init({required AppMode mode}){
+  init(AppMode mode) {
     appMode = mode;
 
     debug.enabled = mode == AppMode.test;

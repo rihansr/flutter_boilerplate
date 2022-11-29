@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -87,6 +88,45 @@ class Extension {
     });
 
     return File(path);
+  }
+
+  Future<dynamic> pickFiles(
+      {bool allowMultiple = false,
+      FileType type = FileType.custom,
+      List<String>? allowedExtensions}) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: allowMultiple,
+      type: type,
+      allowCompression: true,
+      allowedExtensions: allowedExtensions ??
+          [
+            'mp4',
+            'm4v',
+            'hevc',
+            'mov',
+            'avi',
+            '3gp',
+            'mkv',
+            'flv',
+            'zip',
+            'doc',
+            'docx',
+            'csv',
+            'xlx',
+            'jpg',
+            'png',
+            'jpeg',
+            'pdf'
+          ],
+    );
+
+    if (result != null) {
+      return allowMultiple
+          ? result.paths.map((path) => File(path ?? '')).toList()
+          : File(result.files.single.path ?? '');
+    } else {
+      return allowMultiple ? [] : File('');
+    }
   }
 
   Future<bool> isFileSizeExceeded(File file,
@@ -185,7 +225,7 @@ extension DigitExtension on dynamic {
 }
 
 extension DateTimeParser on dynamic {
-   /* bool dateExpired({int multipliedBy = 1}) => validator.isEmpty(this)
+  /* bool dateExpired({int multipliedBy = 1}) => validator.isEmpty(this)
       ? false
       : validator.isNotMatch(this, 0) &&
           (int.parse('${this ?? 0}') * multipliedBy) <

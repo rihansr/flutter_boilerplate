@@ -105,5 +105,5 @@
     }
   },
   "someErrorOccured": "Some Error Occured!",
-  "requestTimeout": "RRequest timed out!"
+  "requestTimeout": "Request timed out!"
 }

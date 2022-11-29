@@ -27,27 +27,46 @@ class DashboardView extends StatelessWidget {
             ),
           ),
         ),
-        body: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(12),
-          child: Splitter.horizontal(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ButtonWidget(
-                label: string(context).change,
-                leading: const Icon(Icons.dark_mode),
-                contentSpacing: 4,
-                onPressed: () => appSettings.switchTheme,
-              ),
-              ButtonWidget(
-                label: string(context).change,
-                leading: const Icon(Icons.language),
-                contentSpacing: 4,
-                onPressed: () => {appSettings.switchLanguage},
-              ),
-            ],
-          ),
+        body: Splitter.vertical(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Splitter.horizontal(
+              spacing: 12,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonWidget(
+                  label: 'Http',
+                  onPressed: () => controller.httpCall(),
+                ),
+                ButtonWidget(
+                  label: 'Dio',
+                  onPressed: () => controller.dioCall(),
+                ),
+                ButtonWidget(
+                  label: 'Multipart',
+                  onPressed: () => controller.multipartCall(),
+                ),
+              ],
+            ),
+            Splitter.horizontal(
+              spacing: 12,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonWidget(
+                  label: string(context).change,
+                  leading: const Icon(Icons.dark_mode),
+                  contentSpacing: 4,
+                  onPressed: () => appSettings.switchTheme,
+                ),
+                ButtonWidget(
+                  label: string(context).change,
+                  leading: const Icon(Icons.language),
+                  contentSpacing: 4,
+                  onPressed: () => appSettings.switchLanguage,
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
