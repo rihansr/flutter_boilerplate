@@ -43,8 +43,12 @@ class DashboardView extends StatelessWidget {
                   onPressed: () => controller.dioCall(),
                 ),
                 ButtonWidget(
-                  label: 'Multipart',
+                  label: 'Upload',
                   onPressed: () => controller.multipartCall(),
+                ),
+                ButtonWidget(
+                  label: 'Download',
+                  onPressed: () => controller.downloadFile(),
                 ),
               ],
             ),
