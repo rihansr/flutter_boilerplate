@@ -171,7 +171,7 @@ class Extension {
     }
   }
 
-  Future<bool> saveFileToDownloads({var data, String? fileName}) async {
+  Future<bool> saveFileToDownloads(var data, [String? fileName]) async {
     try {
       String downloadFolder = (await getApplicationDocumentsDirectory()).path;
 
@@ -181,8 +181,7 @@ class Extension {
 
       File saveFile = File("$downloadFolder/$fileName");
 
-      saveFile.writeAsBytesSync(
-          data is File ? data.readAsBytesSync() : data.bodyBytes);
+      saveFile.writeAsBytesSync(data is File ? data.readAsBytesSync() : data);
 
       return true;
     } catch (ex) {

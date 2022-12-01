@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_http_cache/dio_http_cache.dart' as dio;
-import 'package:dio/adapter.dart';
 import 'package:http/http.dart' as http;
 import '../services/server_env.dart';
 import '../shared/enums.dart';
@@ -18,7 +16,7 @@ final api = Api.function;
 
 enum Method { get, post, put, delete }
 
-enum InvokeType { http, dio, multipart }
+enum InvokeType { http, dio, multipart, download }
 
 class Api {
   static Api get function => Api._();
@@ -28,6 +26,7 @@ class Api {
     InvokeType? via,
     String? baseUrl,
     required var endpoint,
+    var path,
     Method method = Method.get,
     Map<String, String>? headers,
     Map<String, String>? additionalHeaders,
@@ -35,7 +34,7 @@ class Api {
     var body,
     Duration timeout = const Duration(seconds: 20),
     String? contentType,
-    bool supportContentType = true,
+    bool contentTypeSupported = true,
     String? token,
     dynamic id,
     bool enableEncoding = false,
@@ -47,6 +46,7 @@ class Api {
     String? cacheSubKey,
     Duration? cacheDuration,
     bool chacheForceRefresh = false,
+    Function(int)? onProgress,
   }) async {
     via ??= (() {
       if (enableCaching ||
@@ -61,12 +61,16 @@ class Api {
     }());
 
     endpoint = _buildEndpoint(
-        baseUrl: baseUrl, endpoint: endpoint, id: id, query: queryParams);
+      baseUrl: baseUrl,
+      endpoint: endpoint,
+      id: id,
+      query: via == InvokeType.http ? queryParams : null,
+    );
 
     headers ??= _buildHeaders(
       token: token,
       contentType: contentType,
-      supportContentType: supportContentType,
+      contentTypeSupported: contentTypeSupported,
     )..addAll(additionalHeaders ?? {});
 
     if (body != null) body = enableEncoding ? jsonEncode(body) : body;
@@ -75,20 +79,48 @@ class Api {
 
     if (!enableCaching) enableCaching = cacheDuration != null;
 
+    dio.BaseOptions baseOptions = dio.BaseOptions(
+      method: method.name,
+      baseUrl: baseUrl ?? ServerEnv.baseUrl,
+      connectTimeout: timeout.inMilliseconds,
+      headers: headers,
+      queryParameters: queryParams,
+      validateStatus: (status) => true,
+    );
+
+    final dio.LogInterceptor logInterceptor = dio.LogInterceptor(
+      request: false,
+      requestHeader: false,
+      responseHeader: false,
+      error: false,
+      logPrint: (s) => {},
+    );
+
     Response response = await _exceptionHandler(
           (() async {
             switch (via) {
               case InvokeType.dio:
-                dio.Dio dioClient = dio.Dio(dio.BaseOptions(
-                  method: method.name,
-                  baseUrl: baseUrl ?? ServerEnv.baseUrl,
-                  headers: headers,
-                  sendTimeout: timeout.inMilliseconds,
-                  receiveTimeout: timeout.inMilliseconds,
-                  connectTimeout: timeout.inMilliseconds,
-                  validateStatus: (status) => true,
-                ))
-                  ..interceptors.addAll([
+              case InvokeType.multipart:
+              case InvokeType.download:
+                int progress = -1;
+                dio.Dio dioClient = dio.Dio(
+                  (() {
+                    switch (via) {
+                      case InvokeType.dio:
+                        return baseOptions.copyWith(
+                          sendTimeout: timeout.inMilliseconds,
+                          receiveTimeout: timeout.inMilliseconds,
+                        );
+                      case InvokeType.download:
+                        return baseOptions.copyWith(
+                          responseType: dio.ResponseType.bytes,
+                          followRedirects: false,
+                        );
+                      default:
+                        return baseOptions;
+                    }
+                  }()),
+                )..interceptors.addAll([
                     if (enableCaching)
                       dio.DioCacheManager(
                         dio.CacheConfig(
@@ -96,26 +128,40 @@ class Api {
                           defaultRequestMethod: method.name,
                         ),
                       ).interceptor,
-                    dio.LogInterceptor(
-                      request: false,
-                      requestHeader: false,
-                      responseHeader: false,
-                      error: false,
-                      logPrint: (s) => {},
-                    )
+                    logInterceptor,
                   ]);
+
                 return await dioClient
-                    .request(endpoint,
-                        queryParameters: queryParams,
-                        data: body,
-                        options: enableCaching
-                            ? dio.buildCacheOptions(
-                                cacheDuration ?? const Duration(days: 7),
-                                primaryKey: cachePrimaryKey ?? endpoint,
-                                subKey: cacheSubKey,
-                                forceRefresh: chacheForceRefresh,
-                              )
-                            : null)
+                    .request(
+                      endpoint,
+                      data: via == InvokeType.multipart
+                          ? dio.FormData.fromMap(body as Map<String, dynamic>)
+                          : body,
+                      options: enableCaching
+                          ? dio.buildCacheOptions(
+                              cacheDuration ?? const Duration(days: 7),
+                              primaryKey: cachePrimaryKey ?? endpoint,
+                              subKey: cacheSubKey,
+                              forceRefresh: chacheForceRefresh,
+                            )
+                          : null,
+                      onSendProgress: (received, total) {
+                        int newPercentage =
+                            total != -1 ? (received / total * 100).toInt() : 0;
+                        if (progress != newPercentage) {
+                          progress = newPercentage;
+                          onProgress?.call(progress);
+                        }
+                      },
+                      onReceiveProgress: (received, total) {
+                        int newPercentage =
+                            total != -1 ? (received / total * 100).toInt() : 0;
+                        if (progress != newPercentage) {
+                          progress = newPercentage;
+                          onProgress?.call(progress);
+                        }
+                      },
+                    )
                     .onError((error, stackTrace) => throw (error.toString()))
                     .timeout(
                       timeout,
@@ -127,9 +173,21 @@ class Api {
                           data: response.data),
                     );
 
-              case InvokeType.multipart:
+              /* case InvokeType.multipart:
                 if (body == null && body != Map) return Response();
-                http.MultipartRequest request = http.MultipartRequest(
+                int progress = -1;
+                var formData = dio.FormData();
+
+                (body as Map).forEach((key, value) {
+                  value is http.MultipartFile
+                      ? formData.files.add(MapEntry(
+                          '$key',
+                          value as dio.MultipartFile,
+                        ))
+                      : formData.fields.add(MapEntry('$key', '$value'));
+                }); */
+
+              /* http.MultipartRequest request = http.MultipartRequest(
                     method.name.toUpperCase(), Uri.parse(endpoint));
 
                 (body as Map).forEach((key, value) {
@@ -146,7 +204,7 @@ class Api {
                     responseToString, streamedResponse.statusCode);
                 return Response(
                     statusCode: response.statusCode,
-                    data: jsonDecode(response.body));
+                    data: jsonDecode(response.body)); */
 
               case InvokeType.http:
               default:
@@ -227,10 +285,10 @@ class Api {
   Map<String, String> _buildHeaders(
           {String? token,
           String? contentType,
-          bool supportContentType = true}) =>
+          bool contentTypeSupported = true}) =>
       {
         HttpHeaders.acceptHeader: 'application/json',
-        if (supportContentType)
+        if (contentTypeSupported)
           HttpHeaders.contentTypeHeader:
               contentType ?? dio.Headers.jsonContentType,
         if (token != null) HttpHeaders.authorizationHeader: "Bearer $token"

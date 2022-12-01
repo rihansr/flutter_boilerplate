@@ -33,6 +33,7 @@ class DashboardView extends StatelessWidget {
             Splitter.horizontal(
               spacing: 12,
               mainAxisAlignment: MainAxisAlignment.center,
+              flexes: const [1, 1, 1, 1],
               children: [
                 ButtonWidget(
                   label: 'Http',
@@ -43,13 +44,16 @@ class DashboardView extends StatelessWidget {
                   onPressed: () => controller.dioCall(),
                 ),
                 ButtonWidget(
-                  label: 'Upload',
-                  onPressed: () => controller.multipartCall(),
+                  label:
+                      'Upload${controller.downloadProgress == null ? '' : ' ${controller.uploadProgress}%'}',
+                  onPressed: () => controller.uploadFile(),
                 ),
-                ButtonWidget(
-                  label: 'Download',
-                  onPressed: () => controller.downloadFile(),
-                ),
+                if (controller.url != null)
+                  ButtonWidget(
+                    label:
+                        'Download${controller.downloadProgress == null ? '' : ' ${controller.downloadProgress}%'}',
+                    onPressed: () => controller.downloadFile(),
+                  ),
               ],
             ),
             Splitter.horizontal(
