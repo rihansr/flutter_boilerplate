@@ -17,17 +17,6 @@ class Extension {
 
   String maskRegex = r"\\w(?=\\w{4})";
 
-  /* String? string(var value, {var orElse = '', bool lowercase = false}) {
-    if (validator.isEmpty(value)) return orElse;
-    return value is TextEditingController
-        ? lowercase
-            ? value.text.toString().trim().toLowerCase()
-            : value.text.toString().trim()
-        : lowercase
-            ? value.toString().trim().toLowerCase()
-            : value.toString().trim();
-  } */
-
   Future<bool> hasPermission(Permission permission,
       {bool doAction = true}) async {
     PermissionStatus status = await permission.status;

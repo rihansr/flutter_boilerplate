@@ -2,6 +2,21 @@
   "@_TITLES": "<-----------------TITLES----------------->",
   "appName": "বয়লারপ্লেট",
   "@_LABELS": "<-----------------LABELS----------------->",
+  "phone": "Phone",
+  "email": "E-Mail",
+  "password": "Password",
+  "count": "{count,plural, =0{No {thing}s} other{{count} {thing}s}}",
+  "@count": {
+    "description": "Items count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "thing": {
+        "example": "wombat"
+      }
+    }
+  },
   "price": "{amount}",
   "@price": {
     "placeholders": {
@@ -9,13 +24,23 @@
         "type": "double",
         "format": "currency",
         "example": "৳100.00",
-        "description": "Price of the Food",
+        "description": "Item price",
         "optionalParameters": {
           "decimalDigits": 2,
           "name": "BDT",
           "symbol": "৳",
           "customPattern": "¤#0.00"
         }
+      }
+    }
+  },
+  "expireAt": "{date}",
+  "@expireAt": {
+    "description": "Expiry Date",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
       }
     }
   },
@@ -49,10 +74,10 @@
       },
       "min": {
         "type": "int"
+      },
+      "max": {
+        "type": "int"
       }
-    },
-    "max": {
-      "type": "int"
     }
   },
   "inputMinLengthError": "{field, select, null{Field} other {{field}}} must have at least {min} characters",
