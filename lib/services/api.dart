@@ -54,9 +54,7 @@ class Api {
           (cacheDuration ?? cachePrimaryKey ?? cacheSubKey) != null) {
         return InvokeType.dio;
       } else {
-        return body is http.MultipartRequest
-            ? InvokeType.multipart
-            : InvokeType.http;
+        return InvokeType.http;
       }
     }());
 

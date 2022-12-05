@@ -38,6 +38,8 @@ class Style {
         }()),
         content: Text(
           message,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
           style: themeConfig.textTheme.bodyText2!.copyWith(
             color: themeConfig.theme.primaryColorLight,
           ),

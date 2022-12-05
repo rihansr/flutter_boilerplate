@@ -11,7 +11,8 @@ class DashboardViewModel extends BaseViewModel {
   init() {}
 
   httpCall() async {
-    api
+    setBusy(true, key: 'Http');
+    await api
         .invoke(
           via: InvokeType.http,
           method: Method.get,
@@ -19,12 +20,14 @@ class DashboardViewModel extends BaseViewModel {
           id: 'get',
         )
         .then((response) => debug.print(response.data));
+    setBusy(false, key: 'Http');
   }
 
   dioCall() async {
-    api
+    setBusy(true, key: 'Dio');
+    await api
         .invoke(
-          via: InvokeType.multipart,
+          via: InvokeType.dio,
           method: Method.post,
           baseUrl: 'https://httpbin.org',
           endpoint: 'post',
@@ -32,31 +35,34 @@ class DashboardViewModel extends BaseViewModel {
           body: {'name': 'John Doe', 'email': 'johndoe@example.com'},
           showMessage: true,
           contentTypeSupported: false,
-          cacheDuration: const Duration(seconds: 1),
+          cacheDuration: const Duration(seconds: 30),
         )
         .then((response) => debug.print(response.data));
+    setBusy(false, key: 'Dio');
   }
 
   uploadFile() async {
     await extension.pickPhoto(ImageSource.gallery).then((file) async {
       if (file.existsSync()) {
-        api.invoke(
-          via: InvokeType.multipart,
-          method: Method.post,
-          baseUrl: 'https://v2.convertapi.com',
-          endpoint: 'upload',
-          contentTypeSupported: false,
-          body: {
-            'filename': await MultipartFile.fromFile(
-              file.path,
-              filename: 'filename.jpg',
-            ),
-          },
-          //onProgress: (p0) => setUploadProgress = p0,
-        ).then((response) => {
-              debug.print(response.data),
-              setUrl = response.data['Url'],
-            });
+        api
+            .invoke(
+              via: InvokeType.multipart,
+              method: Method.post,
+              baseUrl: 'https://v2.convertapi.com',
+              endpoint: 'upload',
+              body: {
+                'filename': await MultipartFile.fromFile(
+                  file.path,
+                  filename: 'filename.jpg',
+                ),
+              },
+              onProgress: (p0) => setUloadProgress = p0,
+            )
+            .then((response) => {
+                  debug.print(response.data),
+                  setUloadProgress = null,
+                  setUrl = response.data?['Url'],
+                });
       }
     });
   }
@@ -65,28 +71,27 @@ class DashboardViewModel extends BaseViewModel {
   set setUrl(String? url) => {this.url = url, notifyListeners()};
 
   int? uploadProgress;
-  set setUploadProgress(int percentage) =>
-      {setUploadProgress = percentage, notifyListeners()};
+  set setUloadProgress(int? percentage) =>
+      {uploadProgress = percentage, notifyListeners()};
 
   int? downloadProgress;
-  set setDownloadProgress(int percentage) =>
+  set setDownloadProgress(int? percentage) =>
       {downloadProgress = percentage, notifyListeners()};
 
   downloadFile() async {
-    api
+    var documentDirectory = await getApplicationDocumentsDirectory();
+    var path = '${documentDirectory.path}/pic.jpg';
+
+    await api
         .invoke(
           via: InvokeType.download,
           method: Method.get,
           endpoint: url,
-          path:
-              '${(await getApplicationDocumentsDirectory()).path}/fileName.jpg',
+          path: path,
           onProgress: (p0) => setDownloadProgress = p0,
         )
         .then((response) => {
-              //debug.print(response.data),
-              extension
-                  .saveFileToDownloads(response.data)
-                  .then((value) => debug.print(value)),
+              setDownloadProgress = null,
             });
   }
 }

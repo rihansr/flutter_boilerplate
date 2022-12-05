@@ -29,29 +29,31 @@ class DashboardView extends StatelessWidget {
         ),
         body: Splitter.vertical(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Splitter.horizontal(
+            Wrap(
               spacing: 12,
-              mainAxisAlignment: MainAxisAlignment.center,
-              flexes: const [1, 1, 1, 1],
+              runSpacing: 12,
               children: [
                 ButtonWidget(
                   label: 'Http',
                   onPressed: () => controller.httpCall(),
+                  loading: controller.isLoading(key: 'Http', orElse: false),
                 ),
                 ButtonWidget(
                   label: 'Dio',
                   onPressed: () => controller.dioCall(),
+                  loading: controller.isLoading(key: 'Dio', orElse: false),
                 ),
                 ButtonWidget(
                   label:
-                      'Upload${controller.downloadProgress == null ? '' : ' ${controller.uploadProgress}%'}',
+                      '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}Upload',
                   onPressed: () => controller.uploadFile(),
                 ),
                 if (controller.url != null)
                   ButtonWidget(
                     label:
-                        'Download${controller.downloadProgress == null ? '' : ' ${controller.downloadProgress}%'}',
+                        '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}Download',
                     onPressed: () => controller.downloadFile(),
                   ),
               ],
