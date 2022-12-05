@@ -1,5 +1,5 @@
-import 'package:boilerplate/models/settings_model.dart';
 import 'package:flutter/material.dart';
+import '../models/settings_model.dart';
 import '../configs/app_settings.dart';
 
 class SettingsListenableBuilder extends StatelessWidget {

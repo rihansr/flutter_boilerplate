@@ -1,10 +1,10 @@
-import 'package:boilerplate/services/api.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'base_viewmodel.dart';
 import '../utils/debug.dart';
 import '../utils/extensions.dart';
-import 'base_viewmodel.dart';
+import '../services/api.dart';
 
 class DashboardViewModel extends BaseViewModel {
   DashboardViewModel() : super();

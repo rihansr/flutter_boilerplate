@@ -1,13 +1,13 @@
-import 'package:boilerplate/configs/app_config.dart';
-import 'package:boilerplate/configs/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'configs/provider_config.dart';
 import 'configs/theme_config.dart';
+import 'configs/app_config.dart';
+import 'configs/app_settings.dart';
 import 'routes/route_generator.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes/routes.dart';
 import 'services/navigation_service.dart';
 import 'shared/constants.dart';

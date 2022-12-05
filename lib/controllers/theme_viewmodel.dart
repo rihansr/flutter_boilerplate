@@ -1,7 +1,7 @@
-import 'package:boilerplate/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import '../services/navigation_service.dart';
 import '../models/settings_model.dart';
 import '../shared/shared_prefs.dart';
 

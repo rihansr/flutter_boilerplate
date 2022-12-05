@@ -1,6 +1,5 @@
-import 'package:boilerplate/routes/routes.dart';
 import 'package:flutter/material.dart';
-
+import 'routes.dart';
 import '../views/dashboard_view.dart';
 
 class RouterCustom {

@@ -1,7 +1,6 @@
-import 'package:boilerplate/configs/app_settings.dart';
-import 'package:boilerplate/models/settings_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import '../configs/app_settings.dart';
+import '../models/settings_model.dart';
 
 class ColorPalette {
   Color primary;

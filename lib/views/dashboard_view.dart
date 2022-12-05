@@ -1,13 +1,13 @@
 import 'package:bottom_bar/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:boilerplate/configs/app_settings.dart';
-import 'package:boilerplate/controllers/dashboard_viewmodel.dart';
-import 'package:boilerplate/shared/colors.dart';
-import 'package:boilerplate/shared/strings.dart';
-import 'package:boilerplate/widgets/base_widget.dart';
-import 'package:boilerplate/widgets/button_widget.dart';
-import 'package:boilerplate/widgets/splitter_widget.dart';
+import '../configs/app_settings.dart';
+import '../controllers/dashboard_viewmodel.dart';
+import '../shared/colors.dart';
+import '../shared/strings.dart';
+import '../widgets/base_widget.dart';
+import '../widgets/button_widget.dart';
+import '../widgets/splitter_widget.dart';
 import '../widgets/settings_listenable_builder.dart';
 
 class DashboardView extends StatelessWidget {

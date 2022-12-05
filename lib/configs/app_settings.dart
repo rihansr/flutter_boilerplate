@@ -1,6 +1,6 @@
-import 'package:boilerplate/models/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import '../models/settings_model.dart';
 import '../shared/shared_prefs.dart';
 
 final AppSettings appSettings = AppSettings.value;
