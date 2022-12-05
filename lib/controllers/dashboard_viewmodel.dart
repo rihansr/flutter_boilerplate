@@ -8,7 +8,12 @@ import 'base_viewmodel.dart';
 
 class DashboardViewModel extends BaseViewModel {
   DashboardViewModel() : super();
+
   init() {}
+
+  int selectedIndex = 1;
+  set updateSelectedIndex(int index) =>
+      {selectedIndex = index, notifyListeners()};
 
   httpCall() async {
     setBusy(true, key: 'Http');
