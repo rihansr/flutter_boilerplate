@@ -62,7 +62,7 @@ class EmptyWidget extends StatelessWidget {
               ),
             ),
           if (onAction != null)
-            ButtonWidget(
+            Button(
               shape: BoxShape.rectangle,
               margin: EdgeInsets.only(
                 top: size * .015,

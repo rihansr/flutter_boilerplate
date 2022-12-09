@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputWidget extends StatelessWidget {
+class InputField extends StatelessWidget {
   final TextEditingController? controller;
   final double? height;
   final double? width;
   final bool autoValidate;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-  final bool dense;
+  final bool isDense;
+  final bool isCollapsed;
   final double? fontSize;
   final FontWeight? fontWeight;
   final TextStyle? textStyle;
@@ -16,11 +17,11 @@ class InputWidget extends StatelessWidget {
   final String? title;
   final TextStyle? titleStyle;
   final TextAlign titleAlign;
-  final EdgeInsets? titleSpacing;
+  final EdgeInsets titleSpacing;
   final String? subtitle;
   final TextStyle? subtitleStyle;
   final TextAlign subtitleAlign;
-  final EdgeInsets? subtitleSpacing;
+  final EdgeInsets subtitleSpacing;
   final bool obscureText;
   final TextAlign textAlign;
   final int? maxCharacters;
@@ -31,13 +32,15 @@ class InputWidget extends StatelessWidget {
   final Widget? suffixIcon;
   final bool typeable;
   final bool selectable;
-  final EdgeInsets? padding;
+  final EdgeInsets padding;
   final EdgeInsets? margin;
   final bool borderFocusable;
   final Color? fillColor;
   final Color? borderTint;
   final Color? fontColor;
   final Color? hintColor;
+  final double? hintSize;
+  final FontWeight? hintWeight;
   final TextStyle? hintStyle;
   final TextCapitalization textCapitalization;
   final int lengthFilter;
@@ -46,7 +49,7 @@ class InputWidget extends StatelessWidget {
   final bool autoFocus;
 
   /// Action
-  final Function? validator;
+  final String? Function(String?)? validator;
   final Function()? onClick;
   final Function()? onTapPrefix;
   final Function()? onTapSuffix;
@@ -55,7 +58,7 @@ class InputWidget extends StatelessWidget {
   final Function(String?)? onTyping;
   final Function(String?)? onQuery;
 
-  const InputWidget({
+  const InputField({
     Key? key,
     this.controller,
     this.height,
@@ -68,11 +71,11 @@ class InputWidget extends StatelessWidget {
     this.title,
     this.titleAlign = TextAlign.start,
     this.titleStyle,
-    this.titleSpacing,
+    this.titleSpacing = const EdgeInsets.only(bottom: 8),
     this.subtitle,
     this.subtitleAlign = TextAlign.start,
     this.subtitleStyle,
-    this.subtitleSpacing,
+    this.subtitleSpacing = const EdgeInsets.only(bottom: 8),
     this.obscureText = false,
     this.textAlign = TextAlign.start,
     this.maxLines = 1,
@@ -82,13 +85,16 @@ class InputWidget extends StatelessWidget {
     this.borderTint,
     this.maxCharacters,
     this.hint,
+    this.hintSize,
+    this.hintWeight,
     this.fontSize,
     this.fontWeight,
     this.textStyle,
     this.textCapitalization = TextCapitalization.none,
-    this.dense = false,
-    this.padding,
-    this.margin,
+    this.isDense = false,
+    this.isCollapsed = true,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+    this.margin = const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
     this.borderFocusable = true,
     this.onClick,
     this.prefixIcon,
@@ -125,34 +131,26 @@ class InputWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    EdgeInsets padding = this.padding ??
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 13);
-
-    bool hasTitle = title?.isNotEmpty ?? false;
-    bool hasSubtitle = subtitle?.isNotEmpty ?? false;
-
     return Container(
       height: height,
       width: width,
-      margin: margin ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+      margin: margin,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (hasTitle)
+          if (title?.isNotEmpty ?? false)
             Padding(
-              padding: titleSpacing ?? const EdgeInsets.only(bottom: 8),
+              padding: titleSpacing,
               child: Text(
                 title ?? '',
                 textAlign: titleAlign,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: titleStyle ?? theme.textTheme.bodyText2,
               ),
             ),
-          if (hasSubtitle)
+          if (subtitle?.isNotEmpty ?? false)
             Padding(
-              padding: subtitleSpacing ?? const EdgeInsets.only(bottom: 8),
+              padding: subtitleSpacing,
               child: Text(
                 subtitle ?? '',
                 textAlign: subtitleAlign,
@@ -183,7 +181,7 @@ class InputWidget extends StatelessWidget {
             onTap: onClick,
             maxLength: maxCharacters,
             inputFormatters: inputFormatters ?? format(keyboardType),
-            validator: (value) => validator != null ? validator!(value) : null,
+            validator: validator,
             autovalidateMode: autoValidate
                 ? AutovalidateMode.onUserInteraction
                 : AutovalidateMode.disabled,
@@ -197,16 +195,16 @@ class InputWidget extends StatelessWidget {
               fontWeight: fontWeight,
             ),
             decoration: InputDecoration(
-              filled: true,
-              fillColor: fillColor ?? Theme.of(context).disabledColor,
+              filled: fillColor != null,
+              fillColor: fillColor ?? theme.disabledColor,
               hintText: hint,
               counterStyle: theme.textTheme.subtitle2,
               errorStyle:
                   theme.textTheme.subtitle2?.copyWith(color: theme.errorColor),
               hintStyle: (hintStyle ?? theme.textTheme.subtitle1)?.copyWith(
                 color: hintColor ?? theme.hintColor,
-                fontSize: fontSize,
-                fontWeight: fontWeight,
+                fontSize: hintSize ?? fontSize,
+                fontWeight: hintWeight ?? fontWeight,
               ),
               prefixIconConstraints: BoxConstraints(
                 minWidth: theme.iconTheme.size! + padding.right,
@@ -224,7 +222,7 @@ class InputWidget extends StatelessWidget {
                           iconSize: theme.iconTheme.size!,
                         )),
               suffixIconConstraints: BoxConstraints(
-                minWidth: theme.iconTheme.size! + padding.top,
+                minWidth: theme.iconTheme.size! + padding.left,
                 maxHeight: theme.iconTheme.size!,
               ),
               suffixIcon: suffix ??
@@ -238,8 +236,8 @@ class InputWidget extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           iconSize: theme.iconTheme.size!,
                         )),
-              isDense: dense,
-              isCollapsed: false,
+              isDense: isDense,
+              isCollapsed: isCollapsed,
               contentPadding: padding,
               disabledBorder: boder(theme.disabledColor),
               enabledBorder: boder(theme.dividerColor),

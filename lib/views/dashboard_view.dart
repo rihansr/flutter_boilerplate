@@ -1,3 +1,4 @@
+import 'package:boilerplate/widgets/appbar_widget.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/dashboard_viewmodel.dart';
 import '../../shared/colors.dart';
@@ -7,7 +8,7 @@ import '../configs/app_settings.dart';
 import '../shared/strings.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/splitter_widget.dart';
-import '../widgets/center_curved_bottom_navigation.dart';
+import '../widgets/curved_bottom_navigation_widget.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({Key? key}) : super(key: key);
@@ -19,13 +20,10 @@ class DashboardView extends StatelessWidget {
       model: DashboardViewModel(context),
       onInit: (controller) => controller.init(),
       builder: (context, controller, child) => Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            controller.navigation['label'],
-            maxLines: 1,
-            style: theme.textTheme.bodyText2,
-          ),
+        appBar: AppBarWidget(
+          title: controller.navigation['label'],
+          automaticallyImplyLeading: false,
+          onTapLeading: () {},
         ),
         body: IndexedStack(
           index: controller.selectedTab,
@@ -39,25 +37,45 @@ class DashboardView extends StatelessWidget {
                   spacing: 12,
                   runSpacing: 12,
                   children: [
-                    ButtonWidget(
-                      label: 'Http',
+                    Button(
+                      label: string(context).httpCall,
+                      fontColor: theme.scaffoldBackgroundColor,
                       onPressed: () => controller.httpCall(),
+                      leading: Icon(
+                        Icons.http_outlined,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
                       loading: controller.isLoading(key: 'Http', orElse: false),
                     ),
-                    ButtonWidget(
-                      label: 'Dio',
+                    Button(
+                      label: string(context).dioCall,
+                      fontColor: theme.scaffoldBackgroundColor,
                       onPressed: () => controller.dioCall(),
+                      leading: Icon(
+                        Icons.network_cell_outlined,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
                       loading: controller.isLoading(key: 'Dio', orElse: false),
                     ),
-                    ButtonWidget(
+                    Button(
                       label:
-                          '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}Upload',
+                          '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}${string(context).upload}',
+                      fontColor: theme.scaffoldBackgroundColor,
+                      leading: Icon(
+                        Icons.upload_outlined,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
                       onPressed: () => controller.uploadFile(),
                     ),
                     if (controller.url != null)
-                      ButtonWidget(
+                      Button(
                         label:
-                            '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}Download',
+                            '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}${string(context).download}',
+                        fontColor: theme.scaffoldBackgroundColor,
+                        leading: Icon(
+                          Icons.download_outlined,
+                          color: theme.scaffoldBackgroundColor,
+                        ),
                         onPressed: () => controller.downloadFile(),
                       ),
                   ],
@@ -66,20 +84,30 @@ class DashboardView extends StatelessWidget {
                   spacing: 12,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ButtonWidget(
-                      label: string(context).change,
-                      leading: const Icon(Icons.dark_mode),
-                      contentSpacing: 4,
+                    Button(
+                      label: appSettings.isDarkTheme()
+                          ? string(context).dark
+                          : string(context).light,
+                      fontColor: theme.scaffoldBackgroundColor,
+                      leading: Icon(
+                        appSettings.isDarkTheme()
+                            ? Icons.dark_mode
+                            : Icons.light_mode,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
                       onPressed: () => appSettings.switchTheme,
                     ),
-                    ButtonWidget(
-                      label: string(context).change,
-                      leading: const Icon(Icons.language),
-                      contentSpacing: 4,
+                    Button(
+                      label: string(context).language,
+                      fontColor: theme.scaffoldBackgroundColor,
+                      leading: Icon(
+                        Icons.language,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
                       onPressed: () => appSettings.switchLanguage,
                     ),
                   ],
-                )
+                ),
               ],
             ),
             const Center(child: Text('Profile')),
@@ -101,7 +129,7 @@ class DashboardView extends StatelessWidget {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CenterCurvedBottomNavigation(
+        bottomNavigationBar: CurvedBottomNavigation(
           backgroundColor: theme.cardColor,
           currentIndex: controller.selectedTab,
           height: dimen.navbarHeight,

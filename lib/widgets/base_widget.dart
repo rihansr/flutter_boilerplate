@@ -8,17 +8,16 @@ class BaseWidget<T extends ChangeNotifier> extends StatefulWidget {
   final Function(T)? onInit;
   final Function(T)? onDispose;
 
-  const BaseWidget(
-      {Key? key,
-      required this.model,
-      required this.builder,
-      this.child,
-      this.onInit,
-      this.onDispose})
-      : super(key: key);
+  const BaseWidget({
+    Key? key,
+    required this.model,
+    required this.builder,
+    this.child,
+    this.onInit,
+    this.onDispose,
+  }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _BaseWidgetState<T> createState() => _BaseWidgetState<T>();
 }
 

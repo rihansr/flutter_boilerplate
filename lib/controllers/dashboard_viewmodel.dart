@@ -1,3 +1,4 @@
+import 'package:boilerplate/shared/strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,23 +15,23 @@ class DashboardViewModel extends BaseViewModel {
   final BuildContext context;
 
   init() {
-    //analyticsService.setUser();
+    _selectedTab = centerTab;
   }
 
-  List navigations = [
-    {
-      'icon': AppIcons.cart_rounded,
-      'label': 'Cart',
-    },
-    {
-      'icon': AppIcons.home_rounded,
-      'label': 'Home',
-    },
-    {
-      'icon': AppIcons.profile_outlined,
-      'label': 'Profile',
-    },
-  ];
+  List get navigations => [
+        {
+          'icon': AppIcons.cart_rounded,
+          'label': string(context).cart,
+        },
+        {
+          'icon': AppIcons.home_rounded,
+          'label': string(context).home,
+        },
+        {
+          'icon': AppIcons.profile_outlined,
+          'label': string(context).profile,
+        },
+      ];
 
   get navigation => navigations[_selectedTab];
 

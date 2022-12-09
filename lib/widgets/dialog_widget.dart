@@ -115,7 +115,7 @@ Future<void> showNormalDialog({
                     children: [
                       if (negativeButtonLabel != null)
                         Expanded(
-                          child: ButtonWidget(
+                          child: Button(
                             shape: BoxShape.rectangle,
                             label: negativeButtonLabel,
                             padding: const EdgeInsets.symmetric(
@@ -138,7 +138,7 @@ Future<void> showNormalDialog({
                         const SizedBox(width: 16),
                       if (positiveButtonLabel != null)
                         Expanded(
-                          child: ButtonWidget(
+                          child: Button(
                             shape: BoxShape.rectangle,
                             label: positiveButtonLabel,
                             padding: const EdgeInsets.symmetric(
@@ -161,7 +161,7 @@ Future<void> showNormalDialog({
       ),
     ),
   ).then((value) => callback?.call(value));
-} 
+}
 
 showFullScreenDialog({
   required Widget child,

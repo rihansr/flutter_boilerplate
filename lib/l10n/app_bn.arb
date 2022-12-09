@@ -1,22 +1,11 @@
 {
+  "@@locale": "bn",
   "@_TITLES": "<-----------------TITLES----------------->",
   "appName": "বয়লারপ্লেট",
   "@_LABELS": "<-----------------LABELS----------------->",
   "phone": "Phone",
   "email": "E-Mail",
   "password": "Password",
-  "count": "{count,plural, =0{No {thing}s} other{{count} {thing}s}}",
-  "@count": {
-    "description": "Items count",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "thing": {
-        "example": "wombat"
-      }
-    }
-  },
   "price": "{amount}",
   "@price": {
     "placeholders": {
@@ -44,7 +33,6 @@
       }
     }
   },
-  "change": "সুইচ",
   "rating": "★",
   "retry": "Retry",
   "okay": "Okay",
@@ -130,5 +118,16 @@
     }
   },
   "someErrorOccured": "Some Error Occured!",
-  "requestTimeout": "Request timed out!"
+  "requestTimeout": "Request timed out!",
+  "@_OTHERS": "<-----------------OTHERS----------------->",
+  "cart": "কার্ট",
+  "home": "হোম",
+  "profile": "প্রোফাইল",
+  "httpCall": "এইচটিটিপি",
+  "dioCall": "ডিও",
+  "upload": "আপলোড",
+  "download": "ডাউনলোড",
+  "language": "ভাষা",
+  "dark": "ডার্ক মোড",
+  "light": "লাইট মোড"
 }

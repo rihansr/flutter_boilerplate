@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CenterCurvedBottomNavigation extends StatelessWidget {
-  const CenterCurvedBottomNavigation({
+class CurvedBottomNavigation extends StatelessWidget {
+  const CurvedBottomNavigation({
     Key? key,
     this.backgroundColor = Colors.white,
     this.currentIndex = 0,
@@ -73,7 +73,7 @@ class _BottomNavPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.white
+      ..color = color
       ..style = PaintingStyle.fill;
     Path path = Path()..moveTo(0, size.height * .2);
     path.quadraticBezierTo(size.width * 0.25, 0, size.width * 0.375, 0);
