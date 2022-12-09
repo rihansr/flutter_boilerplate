@@ -2,4 +2,4 @@
 const int kSplashDelayInSec = 1;
 
 // font
-const String kFontFamily = "Lato";
+const String kFontFamily = "Poppins";

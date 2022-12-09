@@ -1,19 +1,47 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'base_viewmodel.dart';
+import '../services/api.dart';
+import '../shared/icons.dart';
 import '../utils/debug.dart';
 import '../utils/extensions.dart';
-import '../services/api.dart';
+import 'base_viewmodel.dart';
 
 class DashboardViewModel extends BaseViewModel {
-  DashboardViewModel() : super();
+  DashboardViewModel(this.context) : super();
 
-  init() {}
+  final BuildContext context;
 
-  int selectedIndex = 1;
-  set updateSelectedIndex(int index) =>
-      {selectedIndex = index, notifyListeners()};
+  init() {
+    //analyticsService.setUser();
+  }
+
+  List navigations = [
+    {
+      'icon': AppIcons.cart_rounded,
+      'label': 'Cart',
+    },
+    {
+      'icon': AppIcons.home_rounded,
+      'label': 'Home',
+    },
+    {
+      'icon': AppIcons.profile_outlined,
+      'label': 'Profile',
+    },
+  ];
+
+  get navigation => navigations[_selectedTab];
+
+  int get centerTab => (navigations.length / 2).floor();
+  bool get isCenterTab => _selectedTab == centerTab;
+
+  int _selectedTab = 0;
+  int get selectedTab => _selectedTab;
+  set selectedTab(int i) => {
+        if (_selectedTab != i) {_selectedTab = i, notifyListeners()}
+      };
 
   httpCall() async {
     setBusy(true, key: 'Http');

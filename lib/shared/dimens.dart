@@ -10,4 +10,7 @@ class Dimen {
   Size size = MediaQuery.of(navigator.context).size;
   double height = MediaQuery.of(navigator.context).size.height;
   double width = MediaQuery.of(navigator.context).size.width;
+  EdgeInsets padding = MediaQuery.of(navigator.context).padding;
+
+  double navbarHeight = 68;
 }

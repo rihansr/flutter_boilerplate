@@ -1,157 +1,119 @@
-import 'package:bottom_bar/bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import '../../controllers/dashboard_viewmodel.dart';
+import '../../shared/colors.dart';
+import '../../shared/dimens.dart';
+import '../../widgets/base_widget.dart';
 import '../configs/app_settings.dart';
-import '../controllers/dashboard_viewmodel.dart';
-import '../shared/colors.dart';
 import '../shared/strings.dart';
-import '../widgets/base_widget.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/splitter_widget.dart';
-import '../widgets/settings_listenable_builder.dart';
+import '../widgets/center_curved_bottom_navigation.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseWidget(
-      model: Provider.of<DashboardViewModel>(context),
+    ThemeData theme = Theme.of(context);
+    return BaseWidget<DashboardViewModel>(
+      model: DashboardViewModel(context),
+      onInit: (controller) => controller.init(),
       builder: (context, controller, child) => Scaffold(
-        floatingActionButton: SizedBox.square(
-            dimension: 48,
-            child: Transform.scale(
-              scale: 1.1,
-              child: FloatingActionButton.large(
-                  child: const Icon(
-                    Icons.add_outlined,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  onPressed: () => {}),
-            )),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CustomPaint(
-          size: const Size(double.infinity, 94.5),
-          painter: BottomNavPainter(color: Colors.amber),
-          child: BottomBar(
-            height: 94.5,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            selectedIndex: controller.selectedIndex,
-            padding: const EdgeInsets.all(0),
-            itemPadding:
-                const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-            onTap: (int index) => controller.updateSelectedIndex = index,
-            items: const <BottomBarItem>[
-              BottomBarItem(
-                icon: Icon(Icons.home_outlined),
-                title: Text('Home'),
-                activeColor: Colors.blue,
-              ),
-              BottomBarItem(
-                icon: Icon(Icons.shopify_outlined),
-                title: Text('Order'),
-                activeColor: Colors.red,
-              ),
-            ],
-          ),
-        ),
         appBar: AppBar(
-          backgroundColor: Colors.amber,
-          title: SettingsListenableBuilder(
-            builder: (settings) => Text(
-              string(context).appName,
-              style: TextStyle(color: ColorPalette.current(settings).primary),
-            ),
+          centerTitle: true,
+          title: Text(
+            controller.navigation['label'],
+            maxLines: 1,
+            style: theme.textTheme.bodyText2,
           ),
         ),
-        body: Splitter.vertical(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        body: IndexedStack(
+          index: controller.selectedTab,
           children: [
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            const Center(child: Text('Cart')),
+            Splitter.vertical(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ButtonWidget(
-                  label: 'Http',
-                  onPressed: () => controller.httpCall(),
-                  loading: controller.isLoading(key: 'Http', orElse: false),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    ButtonWidget(
+                      label: 'Http',
+                      onPressed: () => controller.httpCall(),
+                      loading: controller.isLoading(key: 'Http', orElse: false),
+                    ),
+                    ButtonWidget(
+                      label: 'Dio',
+                      onPressed: () => controller.dioCall(),
+                      loading: controller.isLoading(key: 'Dio', orElse: false),
+                    ),
+                    ButtonWidget(
+                      label:
+                          '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}Upload',
+                      onPressed: () => controller.uploadFile(),
+                    ),
+                    if (controller.url != null)
+                      ButtonWidget(
+                        label:
+                            '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}Download',
+                        onPressed: () => controller.downloadFile(),
+                      ),
+                  ],
                 ),
-                ButtonWidget(
-                  label: 'Dio',
-                  onPressed: () => controller.dioCall(),
-                  loading: controller.isLoading(key: 'Dio', orElse: false),
-                ),
-                ButtonWidget(
-                  label:
-                      '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}Upload',
-                  onPressed: () => controller.uploadFile(),
-                ),
-                if (controller.url != null)
-                  ButtonWidget(
-                    label:
-                        '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}Download',
-                    onPressed: () => controller.downloadFile(),
-                  ),
+                Splitter.horizontal(
+                  spacing: 12,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ButtonWidget(
+                      label: string(context).change,
+                      leading: const Icon(Icons.dark_mode),
+                      contentSpacing: 4,
+                      onPressed: () => appSettings.switchTheme,
+                    ),
+                    ButtonWidget(
+                      label: string(context).change,
+                      leading: const Icon(Icons.language),
+                      contentSpacing: 4,
+                      onPressed: () => appSettings.switchLanguage,
+                    ),
+                  ],
+                )
               ],
             ),
-            Splitter.horizontal(
-              spacing: 12,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ButtonWidget(
-                  label: string(context).change,
-                  leading: const Icon(Icons.dark_mode),
-                  contentSpacing: 4,
-                  onPressed: () => appSettings.switchTheme,
-                ),
-                ButtonWidget(
-                  label: string(context).change,
-                  leading: const Icon(Icons.language),
-                  contentSpacing: 4,
-                  onPressed: () => appSettings.switchLanguage,
-                ),
-              ],
-            )
+            const Center(child: Text('Profile')),
           ],
+        ),
+        floatingActionButton: SizedBox.square(
+          dimension: 48,
+          child: FloatingActionButton.large(
+            backgroundColor: controller.isCenterTab ? null : theme.cardColor,
+            splashColor: Colors.transparent,
+            child: Icon(
+              controller.navigations[controller.centerTab]!['icon'] as IconData,
+              color: controller.isCenterTab
+                  ? ColorPalette.light().primaryLight
+                  : theme.bottomNavigationBarTheme.unselectedItemColor,
+              size: 24,
+            ),
+            onPressed: () => controller.selectedTab = controller.centerTab,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: CenterCurvedBottomNavigation(
+          backgroundColor: theme.cardColor,
+          currentIndex: controller.selectedTab,
+          height: dimen.navbarHeight,
+          items: controller.navigations
+              .map((value) => BottomNavigationBarItem(
+                    icon: Icon(value['icon'] as IconData),
+                    label: value['label'] as String,
+                  ))
+              .toList(),
+          onTap: (i) => controller.selectedTab = i,
         ),
       ),
     );
-  }
-}
-
-class BottomNavPainter extends CustomPainter {
-  final Color color;
-
-  BottomNavPainter({
-    required this.color,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-    Path path = Path()..moveTo(0, size.height * .2);
-    path.quadraticBezierTo(size.width * 0.25, 0, size.width * 0.375, 0);
-    path.quadraticBezierTo(
-        size.width * 0.40, 0, size.width * 0.40, size.height * .04);
-    path.arcToPoint(
-      Offset(size.width * 0.60, size.height * .04),
-      radius: Radius.circular(size.height * .4025),
-      clockwise: false,
-    );
-    path.quadraticBezierTo(size.width * 0.60, 0, size.width * 0.625, 0);
-    path.quadraticBezierTo(size.width * 0.75, 0, size.width, size.height * .2);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
   }
 }

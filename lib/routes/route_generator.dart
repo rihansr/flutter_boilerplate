@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'routes.dart';
 import '../views/dashboard_view.dart';
+import 'routes.dart';
 
 class RouterCustom {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = settings.arguments;
+    //final args = settings.arguments;
 
     switch (settings.name) {
       /* case Routes.splash:

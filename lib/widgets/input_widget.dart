@@ -14,18 +14,12 @@ class InputWidget extends StatelessWidget {
   final TextStyle? textStyle;
   final String? hint;
   final String? title;
-  final double? titleSize;
-  final Color? titleColor;
-  final FontWeight? titleWeight;
-  final TextAlign titleAlign;
   final TextStyle? titleStyle;
+  final TextAlign titleAlign;
   final EdgeInsets? titleSpacing;
   final String? subtitle;
-  final double? subtitleSize;
-  final Color? subtitleColor;
-  final FontWeight? subtitleWeight;
-  final TextAlign subtitleAlign;
   final TextStyle? subtitleStyle;
+  final TextAlign subtitleAlign;
   final EdgeInsets? subtitleSpacing;
   final bool obscureText;
   final TextAlign textAlign;
@@ -48,7 +42,7 @@ class InputWidget extends StatelessWidget {
   final TextCapitalization textCapitalization;
   final int lengthFilter;
   final double? borderRadius;
-  final bool borderBottomOnly;
+  final bool bottomBorderOnly;
   final bool autoFocus;
 
   /// Action
@@ -72,16 +66,10 @@ class InputWidget extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.inputFormatters,
     this.title,
-    this.titleSize,
-    this.titleColor,
-    this.titleWeight,
     this.titleAlign = TextAlign.start,
     this.titleStyle,
     this.titleSpacing,
     this.subtitle,
-    this.subtitleSize,
-    this.subtitleColor,
-    this.subtitleWeight,
     this.subtitleAlign = TextAlign.start,
     this.subtitleStyle,
     this.subtitleSpacing,
@@ -101,7 +89,7 @@ class InputWidget extends StatelessWidget {
     this.dense = false,
     this.padding,
     this.margin,
-    this.borderFocusable = false,
+    this.borderFocusable = true,
     this.onClick,
     this.prefixIcon,
     this.onTapPrefix,
@@ -118,76 +106,57 @@ class InputWidget extends StatelessWidget {
     this.suffix,
     this.autoFocus = false,
     this.inputAction,
-    this.borderBottomOnly = false,
+    this.bottomBorderOnly = true,
   }) : super(key: key);
+
+  InputBorder boder(Color color) {
+    BorderSide borderSide = BorderSide(
+        color: borderTint ?? (borderFocusable ? color : Colors.transparent));
+
+    return bottomBorderOnly
+        ? UnderlineInputBorder(borderSide: borderSide)
+        : OutlineInputBorder(
+            borderSide: borderSide,
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
+    EdgeInsets padding = this.padding ??
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 13);
+
     bool hasTitle = title?.isNotEmpty ?? false;
     bool hasSubtitle = subtitle?.isNotEmpty ?? false;
-
-    BorderRadius borderRadius =
-        BorderRadius.all(Radius.circular(this.borderRadius ?? 6));
-
-    BorderSide normalBorder = BorderSide(
-        color: borderTint ??
-            (borderFocusable ? theme.dividerColor : Colors.transparent));
-
-    BorderSide focusedBorder = BorderSide(
-        color: borderTint ??
-            (borderFocusable ? theme.disabledColor : Colors.transparent));
-
-    BorderSide errorBorder = BorderSide(
-        color: borderTint ??
-            (borderFocusable ? theme.errorColor : Colors.transparent));
-
-    UnderlineInputBorder underlineBorderStyle = UnderlineInputBorder(
-      borderSide: normalBorder,
-    );
-
-    OutlineInputBorder outlineBorderStyle = OutlineInputBorder(
-      borderRadius: borderRadius,
-      borderSide: normalBorder,
-    );
 
     return Container(
       height: height,
       width: width,
-      margin: dense
-          ? null
-          : margin ?? const EdgeInsets.symmetric(vertical: 12),
+      margin: margin ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (hasTitle)
             Padding(
-              padding: titleSpacing ?? const EdgeInsets.only(bottom: 12),
+              padding: titleSpacing ?? const EdgeInsets.only(bottom: 8),
               child: Text(
                 title ?? '',
                 textAlign: titleAlign,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: (titleStyle ?? theme.textTheme.bodyText1)?.copyWith(
-                  color: titleColor,
-                  fontWeight: titleWeight,
-                  fontSize: titleSize,
-                ),
+                style: titleStyle ?? theme.textTheme.bodyText2,
               ),
             ),
           if (hasSubtitle)
             Padding(
-              padding: subtitleSpacing ?? const EdgeInsets.only(bottom: 12),
+              padding: subtitleSpacing ?? const EdgeInsets.only(bottom: 8),
               child: Text(
                 subtitle ?? '',
                 textAlign: subtitleAlign,
-                style: (subtitleStyle ?? theme.textTheme.subtitle1)?.copyWith(
-                  color: subtitleColor,
-                  fontWeight: subtitleWeight,
-                  fontSize: subtitleSize,
-                ),
+                style: subtitleStyle ?? theme.textTheme.subtitle1,
               ),
             ),
           TextFormField(
@@ -228,16 +197,20 @@ class InputWidget extends StatelessWidget {
               fontWeight: fontWeight,
             ),
             decoration: InputDecoration(
-              filled: fillColor != null,
-              fillColor: fillColor,
+              filled: true,
+              fillColor: fillColor ?? Theme.of(context).disabledColor,
               hintText: hint,
               counterStyle: theme.textTheme.subtitle2,
               errorStyle:
                   theme.textTheme.subtitle2?.copyWith(color: theme.errorColor),
-              hintStyle: (hintStyle ?? theme.textTheme.bodyText1)?.copyWith(
+              hintStyle: (hintStyle ?? theme.textTheme.subtitle1)?.copyWith(
                 color: hintColor ?? theme.hintColor,
                 fontSize: fontSize,
                 fontWeight: fontWeight,
+              ),
+              prefixIconConstraints: BoxConstraints(
+                minWidth: theme.iconTheme.size! + padding.right,
+                maxHeight: theme.iconTheme.size!,
               ),
               prefixIcon: prefix ??
                   (prefixIcon == null
@@ -250,6 +223,10 @@ class InputWidget extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           iconSize: theme.iconTheme.size!,
                         )),
+              suffixIconConstraints: BoxConstraints(
+                minWidth: theme.iconTheme.size! + padding.top,
+                maxHeight: theme.iconTheme.size!,
+              ),
               suffixIcon: suffix ??
                   (suffixIcon == null
                       ? null
@@ -263,21 +240,13 @@ class InputWidget extends StatelessWidget {
                         )),
               isDense: dense,
               isCollapsed: false,
-              contentPadding: padding ??
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-              enabledBorder:
-                  borderBottomOnly ? underlineBorderStyle : outlineBorderStyle,
-              border:
-                  borderBottomOnly ? underlineBorderStyle : outlineBorderStyle,
-              focusedBorder: borderBottomOnly
-                  ? underlineBorderStyle.copyWith(borderSide: focusedBorder)
-                  : outlineBorderStyle.copyWith(borderSide: focusedBorder),
-              errorBorder: borderBottomOnly
-                  ? underlineBorderStyle.copyWith(borderSide: errorBorder)
-                  : outlineBorderStyle.copyWith(borderSide: errorBorder),
-              focusedErrorBorder: borderBottomOnly
-                  ? underlineBorderStyle.copyWith(borderSide: errorBorder)
-                  : outlineBorderStyle.copyWith(borderSide: errorBorder),
+              contentPadding: padding,
+              disabledBorder: boder(theme.disabledColor),
+              enabledBorder: boder(theme.dividerColor),
+              border: boder(theme.dividerColor),
+              focusedBorder: boder(theme.hintColor),
+              errorBorder: boder(theme.errorColor),
+              focusedErrorBorder: boder(theme.errorColor),
             ),
           ),
         ],
