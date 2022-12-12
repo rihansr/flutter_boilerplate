@@ -1,79 +1,97 @@
-import 'package:boilerplate/controllers/location_viewmodel.dart';
-import 'package:boilerplate/models/location_model.dart';
+import 'package:boilerplate/services/navigation_service.dart';
+import 'package:boilerplate/shared/styles.dart';
 import 'package:flutter/material.dart';
+import '../../configs/theme_config.dart';
+import '../../controllers/location_viewmodel.dart';
+import '../../models/location_model.dart';
+import '../../shared/icons.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/listview_builder.dart';
+import '../../widgets/separator_widget.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
-  // Demo list to show querying
-  List<String> searchTerms = [
-    "Apple",
-    "Banana",
-    "Mango",
-    "Pear",
-    "Watermelons",
-    "Blueberries",
-    "Pineapples",
-    "Strawberries"
-  ];
+  @override
+  String? get searchFieldLabel => 'Search your location';
 
-  // first overwrite to
-  // clear the search text
+  @override
+  TextStyle? get searchFieldStyle => themeConfig.textTheme.bodyText2?.copyWith(
+        color: themeConfig.theme.hintColor,
+      );
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
-      IconButton(
-        onPressed: () {
-          query = '';
-        },
-        icon: Icon(Icons.clear),
+      Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: AppBarIconButton(
+          icon: AppIcons.close,
+          onTap: () => query = '',
+        ),
       ),
     ];
   }
 
-  // second overwrite to pop out of search menu
   @override
   Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back),
+    return AppBarIconButton(
+      icon: AppIcons.arrow_back,
+      onTap: () => close(context, null),
     );
   }
 
-  // third overwrite to show query result
   @override
   Widget buildResults(BuildContext context) {
-    return FutureBuilder(
-      initialData: const [],
-      future: locationProvider(context: context).searchLocations(query),
-      builder: (context, snapshot) => ListView.builder(
-        itemCount: snapshot.data?.length,
-        itemBuilder: (context, index) {
-          var result = snapshot.data?[index];
-          return ListTile(
-            title: Text(result?.name ?? ''),
-          );
-        },
-      ),
-    );
+    return itemBuilder(context);
   }
 
-  // last overwrite to show the
-  // querying process at the runtime
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder(
-      initialData: const [],
-      future: locationProvider(context: context).searchLocations(query),
-      builder: (context, snapshot) => ListView.builder(
-        itemCount: snapshot.data?.length,
-        itemBuilder: (context, index) {
-          var result = snapshot.data?[index];
-          return ListTile(
-            title: Text(result?.name ?? ''),
-          );
-        },
-      ),
-    );
+    return itemBuilder(context);
   }
+
+  Widget itemBuilder(BuildContext context) => FutureBuilder<List<Location>>(
+        initialData: const [],
+        future: locationProvider(context: context).searchLocations(query),
+        builder: (context, snapshot) => Container(
+          color: Theme.of(context).backgroundColor,
+          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          child: ListViewBuilder<Location>(
+            children: snapshot.data,
+            spacing: const EdgeInsets.symmetric(vertical: 13),
+            divider: Separator.vertical(
+              color: Theme.of(context).disabledColor,
+            ),
+            onChildSelected: (location) => close(context, location),
+            builder: (location, index) {
+              List<String> splittedAddress = location?.name?.split(', ') ?? [];
+              return ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                minLeadingWidth: 0,
+                leading: Icon(
+                  AppIcons.location_rounded,
+                  size: 24,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: Text(
+                  splittedAddress.length > 2
+                      ? splittedAddress
+                          .sublist(2, splittedAddress.length)
+                          .join(', ')
+                      : location?.name ?? '',
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                subtitle: splittedAddress.length > 2
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          splittedAddress.sublist(0, 2).join(', '),
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      )
+                    : null,
+              );
+            },
+          ),
+        ),
+      );
 }

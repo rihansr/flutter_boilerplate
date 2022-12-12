@@ -146,22 +146,15 @@ extension PlacemarkAddress on dynamic {
       return model.Address(
         id: 0,
         street: ([
-          '${place.subLocality ?? ''}'
-                  ' ${place.locality ?? ''}'
-              .trim(),
-          '${place.subAdministrativeArea ?? ''}'
-                  ' ${place.administrativeArea ?? ''}'
-                  ' ${place.postalCode ?? ''}'
-              .trim(),
+          '${place.subThoroughfare ?? ''} ${place.thoroughfare ?? ''}'.trim(),
+          place.subLocality ?? '',
+          '${place.locality ?? ''} ${place.postalCode ?? ''}'.trim(),
+          place.subAdministrativeArea ?? '',
+          place.administrativeArea ?? '',
           place.country ?? '',
         ]..removeWhere((element) => element.isEmpty))
             .join(', '),
-        house: ([
-          '${place.subThoroughfare ?? ''}'
-                  ' ${place.thoroughfare ?? ''}'
-              .trim()
-        ]..removeWhere((element) => element.isEmpty))
-            .join(', '),
+        countryCode: place.isoCountryCode,
         createdAt: DateTime.now(),
         latitude: latLng?.latitude,
         longitude: latLng?.longitude,

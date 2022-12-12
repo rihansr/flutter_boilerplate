@@ -1,4 +1,3 @@
-import 'package:boilerplate/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,6 +9,7 @@ import '../models/address_model.dart';
 import '../models/location_model.dart';
 import '../services/location_service.dart';
 import '../utils/debug.dart';
+import '../utils/validator.dart';
 import 'base_viewmodel.dart';
 
 LocationViewModel locationProvider({BuildContext? context, listen = false}) =>
@@ -44,21 +44,27 @@ class LocationViewModel extends BaseViewModel {
 
   Future<List<Location>> searchLocations(String? query) async {
     if (validator.isEmpty(query)) return [];
-    debug.print(query, boundedText: 'Query');
-    await api
-        .invoke(
-          via: InvokeType.dio,
-          method: Method.get,
-          baseUrl: 'https://nominatim.openstreetmap.org',
-          endpoint: 'search.php',
-          queryParams: {'q': query, 'format': 'jsonv2'},
-          showMessage: true,
-          cacheDuration: const Duration(seconds: 30),
-        )
-        .then((response) => List<Location>.from(
-              response.data.map((json) => Location.fromJson(json)),
-            ));
-    return [];
+    Response response = await api.invoke(
+      via: InvokeType.dio,
+      method: Method.get,
+      baseUrl: 'https://nominatim.openstreetmap.org',
+      endpoint: 'search.php',
+      queryParams: {
+        'q': query,
+        'accept-language': sharedPrefs.settings.locale.languageCode,
+        'countrycodes': sharedPrefs.address?.countryCode,
+        'format': 'jsonv2',
+      }..removeWhere((key, value) => value == null),
+      showMessage: true,
+      cacheSubKey: query,
+      cacheDuration: const Duration(minutes: 1),
+    );
+
+    return response.data == null
+        ? []
+        : List<Location>.from(
+            response.data.map((json) => Location.fromJson(json)),
+          );
   }
 
   setDefaultLocation() async => await fetchLocation(

@@ -9,6 +9,7 @@ class Address {
     this.userId,
     this.street,
     this.house,
+    this.countryCode,
     this.label,
     this.createdAt,
     this.latitude,
@@ -19,6 +20,7 @@ class Address {
   final String? userId;
   final String? street;
   final String? house;
+  final String? countryCode;
   final String? label;
   final DateTime? createdAt;
   final double? latitude;
@@ -29,6 +31,7 @@ class Address {
     String? userId,
     String? street,
     String? house,
+    String? countryCode,
     String? label,
     DateTime? createdAt,
     double? latitude,
@@ -39,6 +42,7 @@ class Address {
         userId: userId ?? this.userId,
         street: street ?? this.street,
         house: house ?? this.house,
+        countryCode: countryCode ?? this.countryCode,
         label: label ?? this.label,
         createdAt: createdAt ?? this.createdAt,
         latitude: latitude ?? this.latitude,
@@ -49,7 +53,8 @@ class Address {
         id: json["id"],
         userId: json["user_id"],
         street: json["street_address"],
-        house: json["apartment"],
+        house: json["house"],
+        countryCode: json["country_code"],
         label: json["label"],
         createdAt: json["created_at"] == null
             ? null
@@ -66,7 +71,8 @@ class Address {
         "id": id,
         "user_id": userId,
         "street_address": street,
-        "apartment": house,
+        "house": house,
+        "country_code": countryCode,
         "label": label,
         "created_at": createdAt?.toIso8601String(),
         "latitude": latitude.toString(),
@@ -76,7 +82,8 @@ class Address {
   Map<String, dynamic> toMap() => {
         "id": id,
         "street_address": street,
-        "apartment": house,
+        "house": house,
+        "country_code": countryCode,
         "label": label,
         "latitude": latitude,
         "longitude": longitude,

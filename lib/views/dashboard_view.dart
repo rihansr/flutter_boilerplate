@@ -4,6 +4,7 @@ import '../../shared/colors.dart';
 import '../../shared/dimens.dart';
 import '../../widgets/base_widget.dart';
 import '../controllers/location_viewmodel.dart';
+import '../utils/debug.dart';
 import '../widgets/appbar_widget.dart';
 import '../configs/app_settings.dart';
 import '../shared/strings.dart';
@@ -135,9 +136,7 @@ class DashboardView extends StatelessWidget {
                       onPressed: () => showSearch(
                         context: context,
                         delegate: CustomSearchDelegate(),
-                      ),
-                      /* locationProvider(context: context)
-                                  .searchLocations('Rose view sylhet'), */
+                      ).then((value) => debug.print(value)),
                     ),
                   ],
                 ),
