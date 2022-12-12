@@ -8,9 +8,8 @@ class Address {
     this.id,
     this.userId,
     this.street,
-    this.apartment,
-    this.landmark,
-    this.tag,
+    this.house,
+    this.label,
     this.createdAt,
     this.latitude,
     this.longitude,
@@ -19,9 +18,8 @@ class Address {
   final int? id;
   final String? userId;
   final String? street;
-  final String? apartment;
-  final String? landmark;
-  final String? tag;
+  final String? house;
+  final String? label;
   final DateTime? createdAt;
   final double? latitude;
   final double? longitude;
@@ -30,8 +28,8 @@ class Address {
     int? id,
     String? userId,
     String? street,
-    String? apartment,
-    String? tag,
+    String? house,
+    String? label,
     DateTime? createdAt,
     double? latitude,
     double? longitude,
@@ -40,8 +38,8 @@ class Address {
         id: id ?? this.id,
         userId: userId ?? this.userId,
         street: street ?? this.street,
-        apartment: apartment ?? this.apartment,
-        tag: tag ?? this.tag,
+        house: house ?? this.house,
+        label: label ?? this.label,
         createdAt: createdAt ?? this.createdAt,
         latitude: latitude ?? this.latitude,
         longitude: longitude ?? this.longitude,
@@ -51,8 +49,8 @@ class Address {
         id: json["id"],
         userId: json["user_id"],
         street: json["street_address"],
-        apartment: json["apartment"],
-        tag: json["tag"],
+        house: json["apartment"],
+        label: json["label"],
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -68,40 +66,35 @@ class Address {
         "id": id,
         "user_id": userId,
         "street_address": street,
-        "apartment": apartment,
-        "landmark": landmark,
-        "tag": tag,
+        "apartment": house,
+        "label": label,
         "created_at": createdAt?.toIso8601String(),
         "latitude": latitude.toString(),
         "longitude": longitude.toString(),
       };
 
-  Map<String, dynamic> toMap(
-          {bool hasId = true, bool trimlatLngLabel = false}) =>
-      {
-        if (id != null && hasId) "address_id": id,
-        if (street != null) "address": street,
-        if (apartment != null) "house": apartment,
-        if (tag != null) "tag": tag,
-        if (latitude != null) trimlatLngLabel ? "lat" : "latitude": latitude,
-        if (longitude != null) trimlatLngLabel ? "lng" : "longitude": longitude,
-      };
+  Map<String, dynamic> toMap() => {
+        "id": id,
+        "street_address": street,
+        "apartment": house,
+        "label": label,
+        "latitude": latitude,
+        "longitude": longitude,
+      }..removeWhere((key, value) => value == null);
 
-  String get _fullAddress => [
-        if (apartment != null) apartment,
-        if (street != null) street,
-      ].join(', ');
-
-  String? get fullAddress => _fullAddress.isEmpty ? null : _fullAddress;
+  String get _address =>
+      ([house, street]..removeWhere((element) => element?.isEmpty ?? true))
+          .join(', ');
+  String? get address => _address.isEmpty ? null : _address;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Address && other.tag == tag;
+    return other is Address && other.label == label;
   }
 
   @override
   int get hashCode {
-    return tag.hashCode;
+    return label.hashCode;
   }
 }

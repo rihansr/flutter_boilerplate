@@ -3,12 +3,14 @@ import '../../controllers/dashboard_viewmodel.dart';
 import '../../shared/colors.dart';
 import '../../shared/dimens.dart';
 import '../../widgets/base_widget.dart';
+import '../controllers/location_viewmodel.dart';
 import '../widgets/appbar_widget.dart';
 import '../configs/app_settings.dart';
 import '../shared/strings.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/splitter_widget.dart';
 import '../widgets/curved_bottom_navigation_widget.dart';
+import 'components/location_search_delegate.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({Key? key}) : super(key: key);
@@ -108,18 +110,44 @@ class DashboardView extends StatelessWidget {
                     ),
                   ],
                 ),
-                Button(
-                  label: string(context).location,
-                  fontColor: theme.scaffoldBackgroundColor,
-                  leading: Icon(
-                    Icons.location_pin,
-                    color: theme.scaffoldBackgroundColor,
-                  ),
-                  onPressed: () => controller.currentLocation,
+                Splitter.horizontal(
+                  spacing: 12,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Button(
+                      label: string(context).location,
+                      fontColor: theme.scaffoldBackgroundColor,
+                      leading: Icon(
+                        Icons.location_pin,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
+                      loading: controller.isLoading(),
+                      onPressed: () =>
+                          locationProvider(context: context).fetchLocation(),
+                    ),
+                    Button(
+                      label: string(context).search,
+                      fontColor: theme.scaffoldBackgroundColor,
+                      leading: Icon(
+                        Icons.search,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
+                      onPressed: () => showSearch(
+                        context: context,
+                        delegate: CustomSearchDelegate(),
+                      ),
+                      /* locationProvider(context: context)
+                                  .searchLocations('Rose view sylhet'), */
+                    ),
+                  ],
                 ),
               ],
             ),
-            const Center(child: Text('Profile')),
+            Center(
+              child: Text(
+                '${locationProvider(context: context, listen: true).currentAddress.address}',
+              ),
+            ),
           ],
         ),
         floatingActionButton: SizedBox.square(

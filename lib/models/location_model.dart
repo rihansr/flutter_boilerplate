@@ -7,16 +7,16 @@ class Location {
   const Location({
     this.id,
     this.name,
-    this.latitude = 23.4905831,
-    this.longitude = 88.1002603,
+    this.latitude,
+    this.longitude,
     this.isActive = false,
     this.isDefault = false,
   });
 
   final int? id;
   final String? name;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final bool isActive;
   final bool isDefault;
 
@@ -38,10 +38,14 @@ class Location {
       );
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-        id: json["id"],
-        name: json["name"],
-        latitude: double.parse('${json["latitude"] ?? 23.4905831}'),
-        longitude: double.parse('${json["longitude"] ?? 88.1002603}'),
+        id: json["id"] ?? json['place_id'],
+        name: json["name"] ?? json["display_name"],
+        latitude: json["latitude"] ?? json["lat"] == null
+            ? null
+            : double.parse('${json["latitude"] ?? json["lat"]}'),
+        longitude: json["longitude"] ?? json["lon"] == null
+            ? null
+            : double.parse('${json["longitude"] ?? json["lon"]}'),
         isActive: (json["is_active"] ?? 0) == 1,
         isDefault: (json["is_default"] ?? 0) == 1,
       );

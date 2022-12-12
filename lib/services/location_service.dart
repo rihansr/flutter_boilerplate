@@ -3,24 +3,39 @@ import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../shared/enums.dart';
+import '../shared/styles.dart';
 import '../utils/debug.dart';
-import '../models/address_model.dart';
+import '../models/location_model.dart' as model;
+import '../models/address_model.dart' as model;
 
 class LocationService {
   final Function(Position position) listener;
   final bool listen;
+  final bool actionHandling;
+  final bool alertMessage;
 
-  LocationService(this.listener, {this.listen = false});
+  LocationService(
+    this.listener, {
+    this.listen = false,
+    this.actionHandling = true,
+    this.alertMessage = true,
+  });
 
   /// Determine the current position of the device.
   /// When the location services are not enabled or permissions
   /// are denied the `Future` will return an error.
-  Future get position async {
+  Future<bool> get _hasPermission async {
     // Test if location services are enabled.
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      Geolocator.openLocationSettings();
-      return Future.error('location services are disabled');
+      if (actionHandling) Geolocator.openLocationSettings();
+      _showErrorMessage(
+        'location services are disabled',
+        logOnly: !alertMessage,
+        tag: 'Location Service',
+      );
+      return false;
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
@@ -32,17 +47,31 @@ class LocationService {
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.
-        Geolocator.openAppSettings();
-        return Future.error('Location permissions are denied');
+        if (actionHandling) Geolocator.openAppSettings();
+        _showErrorMessage(
+          'Location permissions are denied',
+          logOnly: !alertMessage,
+          tag: 'Location Permisson',
+        );
+        return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
-      Geolocator.openAppSettings();
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      if (actionHandling) Geolocator.openAppSettings();
+      _showErrorMessage(
+        'Location permissions are permanently denied, we cannot request permissions',
+        logOnly: !alertMessage,
+        tag: 'Location Permisson',
+      );
+      return false;
     }
+    return true;
+  }
+
+  Future<void> get invoke async {
+    if (!await _hasPermission) return;
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
@@ -75,38 +104,72 @@ class LocationService {
       Geolocator.getPositionStream(locationSettings: locationSettings).listen(
           (Position? position) => {if (position != null) listener(position)});
     } else {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      listener(position);
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high)
+          .then((position) => listener(position))
+          .catchError((e) {
+        _showErrorMessage(
+          e,
+          logOnly: !alertMessage,
+          tag: 'Current Position Exception',
+        );
+      });
     }
+  }
+
+  void _showErrorMessage(
+    String? message, {
+    String? tag,
+    bool logOnly = false,
+  }) {
+    if (message == null) return;
+    if (!logOnly) style.toast(message, type: MessageType.error);
+    debug.print(message, boundedText: tag ?? 'Location Exception');
   }
 }
 
-extension PlacemarkAddress<T> on T? {
-  LatLng? get latLng => T is LatLng
+extension PlacemarkAddress on dynamic {
+  LatLng? get latLng => this is LatLng
       ? this as LatLng
-      : T is Position
-          ? LatLng((this as Position).latitude, (this as Position).longitude)
+      : this is Position || this is Location || this is model.Location
+          ? LatLng(this.latitude, this.longitude)
           : null;
 
-  Future<Address> get address async {
+  Future<model.Address> get address async {
     if (latLng == null) return Address(id: 0, createdAt: DateTime.now());
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latLng!.latitude, latLng!.longitude);
       Placemark place = placemarks[0];
-      debug.print(place.toJson(), boundedText: 'Placemark');
-      return Address(
+
+      debug.print(place.toString(), boundedText: 'Placemark');
+      return model.Address(
         id: 0,
-        street: "${place.name}, ${place.locality}",
-        apartment: place.subLocality,
+        street: ([
+          '${place.subLocality ?? ''}'
+                  ' ${place.locality ?? ''}'
+              .trim(),
+          '${place.subAdministrativeArea ?? ''}'
+                  ' ${place.administrativeArea ?? ''}'
+                  ' ${place.postalCode ?? ''}'
+              .trim(),
+          place.country ?? '',
+        ]..removeWhere((element) => element.isEmpty))
+            .join(', '),
+        house: ([
+          '${place.subThoroughfare ?? ''}'
+                  ' ${place.thoroughfare ?? ''}'
+              .trim()
+        ]..removeWhere((element) => element.isEmpty))
+            .join(', '),
         createdAt: DateTime.now(),
         latitude: latLng?.latitude,
         longitude: latLng?.longitude,
       );
     } catch (e) {
-      return Address(
+      return model.Address(
         id: 0,
+        street: 'Unknown Location',
         createdAt: DateTime.now(),
         latitude: latLng?.latitude,
         longitude: latLng?.latitude,
