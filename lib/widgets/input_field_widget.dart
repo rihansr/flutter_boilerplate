@@ -26,9 +26,7 @@ class InputField extends StatelessWidget {
   final TextAlign textAlign;
   final int? maxCharacters;
   final int maxLines;
-  final Widget? prefix;
   final Widget? prefixIcon;
-  final Widget? suffix;
   final Widget? suffixIcon;
   final bool typeable;
   final bool selectable;
@@ -51,8 +49,6 @@ class InputField extends StatelessWidget {
   /// Action
   final String? Function(String?)? validator;
   final Function()? onClick;
-  final Function()? onTapPrefix;
-  final Function()? onTapSuffix;
   final TextInputAction? inputAction;
   final Function(String)? onAction;
   final Function(String?)? onTyping;
@@ -64,7 +60,6 @@ class InputField extends StatelessWidget {
     this.height,
     this.width,
     this.validator,
-    this.onTapSuffix,
     this.autoValidate = true,
     this.keyboardType = TextInputType.text,
     this.inputFormatters,
@@ -94,11 +89,10 @@ class InputField extends StatelessWidget {
     this.isDense = false,
     this.isCollapsed = true,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-    this.margin = const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+    this.margin = const EdgeInsets.symmetric(vertical: 8),
     this.borderFocusable = true,
     this.onClick,
     this.prefixIcon,
-    this.onTapPrefix,
     this.onAction,
     this.onTyping,
     this.lengthFilter = 1,
@@ -108,8 +102,6 @@ class InputField extends StatelessWidget {
     this.hintColor,
     this.hintStyle,
     this.fillColor,
-    this.prefix,
-    this.suffix,
     this.autoFocus = false,
     this.inputAction,
     this.bottomBorderOnly = true,
@@ -195,7 +187,7 @@ class InputField extends StatelessWidget {
               fontWeight: fontWeight,
             ),
             decoration: InputDecoration(
-              filled: fillColor != null,
+              filled: true,
               fillColor: fillColor ?? theme.disabledColor,
               hintText: hint,
               counterStyle: theme.textTheme.subtitle2,
@@ -210,32 +202,12 @@ class InputField extends StatelessWidget {
                 minWidth: theme.iconTheme.size! + padding.right,
                 maxHeight: theme.iconTheme.size!,
               ),
-              prefixIcon: prefix ??
-                  (prefixIcon == null
-                      ? null
-                      : IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          icon: prefixIcon!,
-                          onPressed: onTapPrefix,
-                          padding: EdgeInsets.zero,
-                          iconSize: theme.iconTheme.size!,
-                        )),
+              prefixIcon: prefixIcon,
               suffixIconConstraints: BoxConstraints(
                 minWidth: theme.iconTheme.size! + padding.left,
                 maxHeight: theme.iconTheme.size!,
               ),
-              suffixIcon: suffix ??
-                  (suffixIcon == null
-                      ? null
-                      : IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          icon: suffixIcon!,
-                          onPressed: onTapSuffix,
-                          padding: EdgeInsets.zero,
-                          iconSize: theme.iconTheme.size!,
-                        )),
+              suffixIcon: suffixIcon,
               isDense: isDense,
               isCollapsed: isCollapsed,
               contentPadding: padding,

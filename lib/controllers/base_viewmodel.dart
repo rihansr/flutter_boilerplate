@@ -23,6 +23,27 @@ class BaseViewModel extends ChangeNotifier {
       (key != null && _loading.containsKey(key) ? _loading[key] : orElse) ??
       busy;
 
+  Map<String, String> _errorLog = {};
+  Map<String, String> get errorLog => _errorLog;
+  get clearErrorLog => errorLog = {};
+  set errorLog(Map<String, String> log) => this
+    .._errorLog = log
+    ..enabledAutoValidate = true
+    ..notifyListeners();
+
+  bool enabledAutoValidate = false;
+  bool isFormValidate(GlobalKey<FormState> formKey,
+      {autoValidate = true, orElse = true}) {
+    bool validated =
+        _errorLog.isNotEmpty || (formKey.currentState?.validate() ?? orElse);
+    if (autoValidate) {
+      this
+        ..enabledAutoValidate = !validated
+        ..notifyListeners();
+    }
+    return validated;
+  }
+
   @override
   void dispose() {
     _busy = false;

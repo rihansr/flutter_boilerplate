@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +17,18 @@ import 'shared/shared_prefs.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
   await sharedPrefs.init();
-  await appConfig.init(AppMode.test);
-  await Future.delayed(const Duration(seconds: kSplashDelayInSec), () {});
+  await Future.wait([
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]),
+    sharedPrefs.init(),
+    if (Platform.isIOS)
+      Future.delayed(const Duration(seconds: kSplashDelayInSec)),
+  ]);
+  appConfig.init(AppMode.test);
+  //FlutterNativeSplash.remove();
   runApp(const MyApp());
 }
 

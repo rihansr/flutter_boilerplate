@@ -64,10 +64,14 @@ class Button<T> extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     TextStyle labelStyle =
         (this.labelStyle ?? theme.textTheme.button)!.copyWith(
-      color: fontColor,
+      color: disable ? Theme.of(context).textTheme.subtitle1?.color : fontColor,
       fontSize: fontSize,
       fontWeight: fontWeight,
     );
+
+    Color? fillColor = disable
+        ? Theme.of(context).disabledColor
+        : this.fillColor ?? Theme.of(context).primaryColor;
 
     return Padding(
       padding: margin,
@@ -78,6 +82,7 @@ class Button<T> extends StatelessWidget {
         focusColor: Colors.transparent,
         highlightColor: Colors.transparent,
         child: Container(
+          height: height,
           width: width,
           padding: padding,
           decoration: shape == null
@@ -88,7 +93,7 @@ class Button<T> extends StatelessWidget {
                       width: borderSize,
                     ),
                   ),
-                  color: fillColor ?? theme.primaryColor,
+                  color: fillColor,
                 )
               : shape is BoxShape
                   ? BoxDecoration(
@@ -96,11 +101,11 @@ class Button<T> extends StatelessWidget {
                       borderRadius: shape == BoxShape.circle
                           ? null
                           : BorderRadius.circular(radius),
-                      color: fillColor ?? theme.colorScheme.secondary,
+                      color: fillColor,
                     )
                   : ShapeDecoration(
                       shape: shape as ShapeBorder,
-                      color: fillColor ?? theme.colorScheme.secondary,
+                      color: fillColor,
                     ),
           child: Wrap(
             direction: direction,

@@ -27,6 +27,8 @@ dependencies:
 
   # UI
   responsive_framework: ^0.2.0
+  flutter_native_splash: ^2.2.16
+  flutter_launcher_icons: ^0.9.3
 
   # Web
   url_launcher: ^6.1.7

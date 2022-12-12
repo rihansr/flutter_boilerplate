@@ -20,7 +20,7 @@ class DashboardView extends StatelessWidget {
       model: DashboardViewModel(context),
       onInit: (controller) => controller.init(),
       builder: (context, controller, child) => Scaffold(
-        appBar: AppBarWidget(
+        appBar: CustomizedAppBar(
           title: controller.navigation['label'],
           automaticallyImplyLeading: false,
           onTapLeading: () {},

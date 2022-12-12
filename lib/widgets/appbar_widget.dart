@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../shared/icons.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final IconData? leading;
   final double iconSize;
@@ -21,10 +21,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final Function()? onTapLeading;
   final bool isCartPage;
   final double? elevation;
-  final List<Widget>? trailingChildren;
+  final List<Widget>? actions;
   final Function()? onTapTrailing;
 
-  const AppBarWidget({
+  const CustomizedAppBar({
     Key? key,
     this.leading,
     this.iconSize = 24,
@@ -45,7 +45,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     this.onTapLeading,
     this.isCartPage = false,
     this.elevation,
-    this.trailingChildren,
+    this.actions,
     this.onTapTrailing,
   }) : super(key: key);
 
@@ -60,7 +60,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       centerTitle: centerTitle,
       titleSpacing: 0,
-      backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
+      backgroundColor: backgroundColor ?? theme.backgroundColor,
       leading: automaticallyImplyLeading || leading != null
           ? AppBarIconButton(
               icon: leading ?? AppIcons.arrow_back,
@@ -100,7 +100,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             ),
         ],
       ),
-      actions: trailingChildren ??
+      actions: actions ??
           (trailing != null
               ? [
                   AppBarIconButton(
