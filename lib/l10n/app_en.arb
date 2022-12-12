@@ -141,5 +141,6 @@
   "download": "Download",
   "language": "Language",
   "dark": "Dark Mode",
-  "light": "Light Mode"
+  "light": "Light Mode",
+  "location": "Location"
 }

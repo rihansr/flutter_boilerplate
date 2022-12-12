@@ -1,16 +1,21 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../models/address/address_model.dart';
-import '../shared/strings.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../utils/debug.dart';
+import '../models/address_model.dart';
 
 class LocationService {
+  final Function(Position position) listener;
+  final bool listen;
+
+  LocationService(this.listener, {this.listen = false});
+
   /// Determine the current position of the device.
   /// When the location services are not enabled or permissions
   /// are denied the `Future` will return an error.
-  Future<void> currentPosition(Function(Position position) callback,
-      {bool notifyLocationChanges = false}) async {
+  Future get position async {
     // Test if location services are enabled.
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -41,7 +46,7 @@ class LocationService {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    if (notifyLocationChanges) {
+    if (listen) {
       LocationSettings? locationSettings = (() {
         switch (defaultTargetPlatform) {
           case TargetPlatform.android:
@@ -68,34 +73,43 @@ class LocationService {
       }());
 
       Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-          (Position? position) => {if (position != null) callback(position)});
+          (Position? position) => {if (position != null) listener(position)});
     } else {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      callback(position);
+      listener(position);
     }
   }
+}
 
-  Future<Address> getAddress(double latitude, double longitude) async {
+extension PlacemarkAddress<T> on T? {
+  LatLng? get latLng => T is LatLng
+      ? this as LatLng
+      : T is Position
+          ? LatLng((this as Position).latitude, (this as Position).longitude)
+          : null;
+
+  Future<Address> get address async {
+    if (latLng == null) return Address(id: 0, createdAt: DateTime.now());
     try {
       List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
+          await placemarkFromCoordinates(latLng!.latitude, latLng!.longitude);
       Placemark place = placemarks[0];
+      debug.print(place.toJson(), boundedText: 'Placemark');
       return Address(
         id: 0,
-        tag: string.currentLocation,
-        address: "${place.name}, ${place.locality}",
-        house: place.subLocality,
-        latitude: latitude,
-        longitude: longitude,
+        street: "${place.name}, ${place.locality}",
+        apartment: place.subLocality,
+        createdAt: DateTime.now(),
+        latitude: latLng?.latitude,
+        longitude: latLng?.longitude,
       );
     } catch (e) {
       return Address(
         id: 0,
-        tag: string.currentLocation,
-        address: string.unknownLocation,
-        latitude: latitude,
-        longitude: longitude,
+        createdAt: DateTime.now(),
+        latitude: latLng?.latitude,
+        longitude: latLng?.latitude,
       );
     }
   }

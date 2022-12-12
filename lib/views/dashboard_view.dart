@@ -1,9 +1,9 @@
-import 'package:boilerplate/widgets/appbar_widget.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/dashboard_viewmodel.dart';
 import '../../shared/colors.dart';
 import '../../shared/dimens.dart';
 import '../../widgets/base_widget.dart';
+import '../widgets/appbar_widget.dart';
 import '../configs/app_settings.dart';
 import '../shared/strings.dart';
 import '../widgets/button_widget.dart';
@@ -42,7 +42,7 @@ class DashboardView extends StatelessWidget {
                       fontColor: theme.scaffoldBackgroundColor,
                       onPressed: () => controller.httpCall(),
                       leading: Icon(
-                        Icons.http_outlined,
+                        Icons.http,
                         color: theme.scaffoldBackgroundColor,
                       ),
                       loading: controller.isLoading(key: 'Http', orElse: false),
@@ -52,7 +52,7 @@ class DashboardView extends StatelessWidget {
                       fontColor: theme.scaffoldBackgroundColor,
                       onPressed: () => controller.dioCall(),
                       leading: Icon(
-                        Icons.network_cell_outlined,
+                        Icons.network_cell,
                         color: theme.scaffoldBackgroundColor,
                       ),
                       loading: controller.isLoading(key: 'Dio', orElse: false),
@@ -62,7 +62,7 @@ class DashboardView extends StatelessWidget {
                           '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}${string(context).upload}',
                       fontColor: theme.scaffoldBackgroundColor,
                       leading: Icon(
-                        Icons.upload_outlined,
+                        Icons.upload,
                         color: theme.scaffoldBackgroundColor,
                       ),
                       onPressed: () => controller.uploadFile(),
@@ -73,7 +73,7 @@ class DashboardView extends StatelessWidget {
                             '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}${string(context).download}',
                         fontColor: theme.scaffoldBackgroundColor,
                         leading: Icon(
-                          Icons.download_outlined,
+                          Icons.download,
                           color: theme.scaffoldBackgroundColor,
                         ),
                         onPressed: () => controller.downloadFile(),
@@ -107,6 +107,15 @@ class DashboardView extends StatelessWidget {
                       onPressed: () => appSettings.switchLanguage,
                     ),
                   ],
+                ),
+                Button(
+                  label: string(context).location,
+                  fontColor: theme.scaffoldBackgroundColor,
+                  leading: Icon(
+                    Icons.location_pin,
+                    color: theme.scaffoldBackgroundColor,
+                  ),
+                  onPressed: () => controller.currentLocation,
                 ),
               ],
             ),

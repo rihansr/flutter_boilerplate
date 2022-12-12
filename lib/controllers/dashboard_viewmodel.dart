@@ -1,8 +1,10 @@
+import 'package:boilerplate/services/location_service.dart';
 import 'package:boilerplate/shared/strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import '../models/address_model.dart';
 import '../services/api.dart';
 import '../shared/icons.dart';
 import '../utils/debug.dart';
@@ -43,6 +45,16 @@ class DashboardViewModel extends BaseViewModel {
   set selectedTab(int i) => {
         if (_selectedTab != i) {_selectedTab = i, notifyListeners()}
       };
+
+  Future get currentLocation async {
+    Address address = await LocationService(
+            (position) =>
+                debug.print(position.toJson(), boundedText: 'Position'),
+            listen: true)
+        .position
+        .address;
+    debug.print(address.toJson(), boundedText: 'Address');
+  }
 
   httpCall() async {
     setBusy(true, key: 'Http');

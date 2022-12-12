@@ -6,6 +6,18 @@
   "phone": "Phone",
   "email": "E-Mail",
   "password": "Password",
+  "count": "{count,plural, =0{No {thing}s} other{{count} {thing}s}}",
+  "@count": {
+    "description": "Items count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "thing": {
+        "example": "wombat"
+      }
+    }
+  },
   "price": "{amount}",
   "@price": {
     "placeholders": {
@@ -129,5 +141,6 @@
   "download": "ডাউনলোড",
   "language": "ভাষা",
   "dark": "ডার্ক মোড",
-  "light": "লাইট মোড"
+  "light": "লাইট মোড",
+  "location": "লোকেশন"
 }
