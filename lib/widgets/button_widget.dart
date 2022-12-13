@@ -125,16 +125,7 @@ class Button<T> extends StatelessWidget {
                     )
                   ]
                 : [
-                    if (leading != null)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right:
-                              direction == Axis.horizontal ? contentSpacing : 0,
-                          bottom:
-                              direction == Axis.vertical ? contentSpacing : 0,
-                        ),
-                        child: leading,
-                      ),
+                    if (leading != null) leading!,
                     if (label != null)
                       Text(
                         label!,
@@ -143,15 +134,7 @@ class Button<T> extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: labelStyle,
                       ),
-                    if (trailing != null)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: direction == Axis.vertical ? contentSpacing : 0,
-                          left:
-                              direction == Axis.horizontal ? contentSpacing : 0,
-                        ),
-                        child: trailing,
-                      ),
+                    if (trailing != null) trailing!,
                   ],
           ),
         ),

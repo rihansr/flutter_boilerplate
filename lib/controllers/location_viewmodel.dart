@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../services/navigation_service.dart';
 import '../shared/shared_prefs.dart';
 import '../models/address_model.dart';
-import '../models/location_model.dart';
 import '../services/location_service.dart';
 import 'base_viewmodel.dart';
 
@@ -21,38 +20,37 @@ class LocationViewModel extends BaseViewModel {
   LatLng? currentPosition = sharedPrefs.address == null
       ? null
       : LatLng(sharedPrefs.address!.latitude!, sharedPrefs.address!.longitude!);
-  Address currentAddress = sharedPrefs.address ?? const Address(id: 0);
 
-  Future<void> fetchLocation({
+  Address? currentAddress = sharedPrefs.address;
+
+  Future<void> findLocation({
+    notifyChanges = false,
+    setAsDefault = false,
     Function(LatLng)? onChange,
-    notify = true,
-    autoListen = true,
   }) async {
-    setBusy(true, key: 'fetching_location');
+    if (!notifyChanges) setBusy(true, key: 'fetching_location');
     await LocationService(
-      (position) => {
-        onChange?.call(LatLng(position.latitude, position.longitude)),
-        setLocation(position, notify),
+      (position) async {
+        LatLng latLng = LatLng(position.latitude, position.longitude);
+        onChange?.call(latLng);
+        this
+          ..currentPosition = latLng
+          ..currentAddress = await latLng.address;
+        setAsDefault ? setDefaultAddress(currentAddress) : notifyListeners();
       },
-      listen: autoListen,
+      listen: notifyChanges,
     ).invoke;
-    setBusy(false, key: 'fetching_location');
+    if (!notifyChanges) setBusy(false, key: 'fetching_location');
   }
 
-  setLocation(dynamic location, [bool notify = false]) async {
-    if (location == null) return;
+  Address defaultAddress = sharedPrefs.address ?? const Address(id: 0);
+  setDefaultAddress(dynamic address) async {
+    if (address == null) return;
 
-    currentPosition = LatLng(
-      location?.latitude ?? const Location().latitude,
-      location?.longitude ?? const Location().longitude,
-    );
+    defaultAddress =
+        address is Address ? address : await (address as Position).address;
 
-    currentAddress =
-        location is Address ? location : await (location as Position).address;
-
-    if (notify) notifyListeners();
-    sharedPrefs.address = currentAddress;
+    notifyListeners();
+    sharedPrefs.address = defaultAddress;
   }
-
-  Future<Address> getLocation(LatLng? position) async => await position.address;
 }

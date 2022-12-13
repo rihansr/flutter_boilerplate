@@ -34,7 +34,7 @@ class DashboardView extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Text(
-                '${locationProvider(context, listen: true).currentAddress.address}',
+                '${locationProvider(context, listen: true).defaultAddress.address}',
               ),
             ),
             Align(
@@ -124,8 +124,9 @@ class DashboardView extends StatelessWidget {
                     ),
                     loading: controller.isLoading(
                         key: 'fetching_location', orElse: false),
-                    onPressed: () => locationProvider(context, listen: false)
-                        .fetchLocation(),
+                    onPressed: () => locationProvider(context).findLocation(
+                      setAsDefault: true
+                    ),
                   ),
                   Button(
                     label: string(context).searchLocation,
