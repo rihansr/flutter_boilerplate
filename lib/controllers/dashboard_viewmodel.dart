@@ -20,16 +20,16 @@ class DashboardViewModel extends BaseViewModel {
 
   List get navigations => [
         {
-          'icon': AppIcons.cart_rounded,
-          'label': string(context).cart,
+          'icon': AppIcons.profile_outlined,
+          'label': string(context).profile,
         },
         {
           'icon': AppIcons.home_rounded,
           'label': string(context).home,
         },
         {
-          'icon': AppIcons.profile_outlined,
-          'label': string(context).profile,
+          'icon': AppIcons.filter_outlined,
+          'label': string(context).settings,
         },
       ];
 

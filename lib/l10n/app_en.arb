@@ -132,7 +132,7 @@
   "someErrorOccured": "Some Error Occured!",
   "requestTimeout": "Request timed out!",
   "@_OTHERS": "<-----------------OTHERS----------------->",
-  "cart": "Cart",
+  "settings": "Settings",
   "home": "Home",
   "profile": "Profile",
   "httpCall": "Http",
@@ -143,5 +143,6 @@
   "dark": "Dark Mode",
   "light": "Light Mode",
   "location": "Location",
-  "search": "search"
+  "searchLocation": "Search Location",
+  "searchYourLocation": "Search your location"
 }

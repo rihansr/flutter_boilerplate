@@ -142,7 +142,6 @@ extension PlacemarkAddress on dynamic {
           await placemarkFromCoordinates(latLng!.latitude, latLng!.longitude);
       Placemark place = placemarks[0];
 
-      debug.print(place.toString(), boundedText: 'Placemark');
       return model.Address(
         id: 0,
         street: ([

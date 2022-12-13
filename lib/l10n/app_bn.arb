@@ -132,7 +132,7 @@
   "someErrorOccured": "Some Error Occured!",
   "requestTimeout": "Request timed out!",
   "@_OTHERS": "<-----------------OTHERS----------------->",
-  "cart": "কার্ট",
+  "settings": "সেটিংস",
   "home": "হোম",
   "profile": "প্রোফাইল",
   "httpCall": "এইচটিটিপি",
@@ -143,5 +143,6 @@
   "dark": "ডার্ক মোড",
   "light": "লাইট মোড",
   "location": "লোকেশন",
-  "search": "সার্চ"
+  "searchLocation": "সার্চ লোকেশন",
+  "searchYourLocation": "আপনার লোকেশন সার্চ করুন"
 }
