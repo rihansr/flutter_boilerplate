@@ -4,19 +4,23 @@ import 'button_widget.dart';
 
 class EmptyWidget extends StatelessWidget {
   final dynamic image;
+  final Color? backgound;
   final String? title;
   final String? subtitle;
   final String? actionLabel;
   final Color? cardColor;
+  final Clip clipBehavior;
   final Function()? onAction;
 
   const EmptyWidget({
     Key? key,
     required this.image,
+    this.backgound,
     this.title,
     this.subtitle,
     this.cardColor,
     this.actionLabel,
+    this.clipBehavior = Clip.antiAlias,
     this.onAction,
   }) : super(key: key);
 
@@ -28,8 +32,9 @@ class EmptyWidget extends StatelessWidget {
 
     return Container(
       width: size * .265,
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: clipBehavior,
       padding: EdgeInsets.all(size * .015),
+      color: backgound,
       alignment: Alignment.center,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -47,18 +52,16 @@ class EmptyWidget extends StatelessWidget {
               child: Text(
                 title!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.headline1,
+                style: theme.textTheme.headline5,
               ),
             ),
           if (subtitle != null)
             Padding(
-              padding: EdgeInsets.only(top: size * .015),
+              padding: EdgeInsets.only(top: size * .01),
               child: Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyText2!.copyWith(
-                  height: 1.75,
-                ),
+                style: theme.textTheme.subtitle1,
               ),
             ),
           if (onAction != null)

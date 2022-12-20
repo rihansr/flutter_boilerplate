@@ -79,12 +79,11 @@ class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (title != null)
             title is Widget
                 ? title
-                : FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      title ?? '',
-                      style: titleStyle ?? theme.textTheme.headline6,
-                    ),
+                : Text(
+                    title ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle ?? theme.textTheme.headline6,
                   ),
           if (subtitle != null)
             Padding(
@@ -103,12 +102,15 @@ class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions ??
           (trailing != null
               ? [
-                  AppBarIconButton(
-                    icon: trailing!,
-                    size: iconSize,
-                    background: iconBackground,
-                    tint: iconBackground,
-                    onTap: onTapTrailing,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: AppBarIconButton(
+                      icon: trailing!,
+                      size: iconSize,
+                      background: iconBackground,
+                      tint: iconBackground,
+                      onTap: onTapTrailing,
+                    ),
                   ),
                 ]
               : null),
@@ -138,14 +140,14 @@ class AppBarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     return Align(
       alignment: Alignment.center,
       child: CircleAvatar(
         radius: radius,
         backgroundColor: background,
         child: IconButton(
-          icon: Icon(icon, size: size, color: tint ?? theme.iconTheme.color),
+          icon: Icon(icon,
+              size: size, color: tint ?? Theme.of(context).iconTheme.color),
           padding: padding,
           iconSize: size,
           splashColor: Colors.transparent,

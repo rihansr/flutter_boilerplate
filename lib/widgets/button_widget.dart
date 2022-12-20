@@ -61,9 +61,8 @@ class Button<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     TextStyle labelStyle =
-        (this.labelStyle ?? theme.textTheme.button)!.copyWith(
+        (this.labelStyle ?? Theme.of(context).textTheme.button)!.copyWith(
       color: disable ? Theme.of(context).textTheme.subtitle1?.color : fontColor,
       fontSize: fontSize,
       fontWeight: fontWeight,

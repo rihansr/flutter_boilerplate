@@ -12,7 +12,7 @@ class TitleBar extends StatelessWidget {
   final FontWeight? fontWeight;
   final TextStyle? textStyle;
   final Color? fillColor;
-  final Color? borderTint;
+  final Color borderTint;
   final double? borderSize;
   final double? iconSize;
   final double? leadingIconSize;
@@ -26,13 +26,11 @@ class TitleBar extends StatelessWidget {
   final double? leftSpacing;
   final double? rightSpacing;
   final double? bottomSpacing;
-  final Widget? leadingWidget;
-  final Widget? trailingWidget;
-  final String? leadingIcon;
-  final String? trailingLabel;
+  final dynamic leading;
+  final dynamic trailing;
   final TextStyle? trailingStyle;
   final bool hide;
-  final double elevation;
+  final double? elevation;
   final Function()? onTapTile;
   final Function()? onTapTrailing;
 
@@ -46,7 +44,7 @@ class TitleBar extends StatelessWidget {
     this.fontWeight,
     this.textStyle,
     this.fillColor,
-    this.borderTint,
+    this.borderTint = Colors.transparent,
     this.borderSize,
     this.iconSize,
     this.leadingIconSize,
@@ -60,12 +58,10 @@ class TitleBar extends StatelessWidget {
     this.leftSpacing,
     this.rightSpacing,
     this.bottomSpacing,
-    this.leadingWidget,
-    this.trailingWidget,
-    this.leadingIcon,
+    this.leading,
+    this.trailing,
     this.hide = false,
-    this.elevation = 0,
-    this.trailingLabel,
+    this.elevation,
     this.trailingStyle,
     this.onTapTile,
     this.onTapTrailing,
@@ -79,64 +75,64 @@ class TitleBar extends StatelessWidget {
       maintainAnimation: true,
       maintainState: true,
       child: CardTile(
-          onTap: onTapTile,
-          margin: margin ??
-              EdgeInsets.fromLTRB(
-                leftSpacing ?? horizontalSpacing,
-                topSpacing ?? verticalSpacing,
-                rightSpacing ?? horizontalSpacing,
-                bottomSpacing ?? verticalSpacing,
-              ),
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 20),
-          elevation: elevation,
-          tileColor: fillColor ?? Colors.transparent,
-          border: (borderTint ?? borderSize) != null
-              ? Border.all(
-                  color: borderTint ?? Colors.transparent,
-                  width: borderSize ?? 1,
-                )
-              : null,
-          leading: leadingWidget ??
-              (leadingIcon != null
-                  ? style.image(
-                      leadingIcon!,
-                      size: leadingIconSize ?? iconSize ?? theme.iconTheme.size,
-                      color:
-                          leadingIconTint ?? iconTint ?? theme.iconTheme.color,
-                      fit: BoxFit.contain,
-                    )
-                  : null),
-          title: titleWidget ??
-              (title != null
-                  ? Text(
-                      title ?? '',
-                      textAlign: TextAlign.start,
-                      maxLines: maxLines,
-                      overflow: maxLines == null ? null : TextOverflow.ellipsis,
-                      style:
-                          (textStyle ?? Theme.of(context).textTheme.headline4)!
-                              .copyWith(
-                        color: fontColor,
-                        fontWeight: fontWeight,
-                        fontSize: fontSize,
+        onTap: onTapTile,
+        margin: margin ??
+            EdgeInsets.fromLTRB(
+              leftSpacing ?? horizontalSpacing,
+              topSpacing ?? verticalSpacing,
+              rightSpacing ?? horizontalSpacing,
+              bottomSpacing ?? verticalSpacing,
+            ),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 20),
+        elevation: elevation,
+        tileColor: fillColor,
+        border: borderSize != null
+            ? Border.all(
+                color: borderTint,
+                width: borderSize ?? 1,
+              )
+            : null,
+        leading: leading != null
+            ? leading is String
+                ? style.image(
+                    leading!,
+                    size: leadingIconSize ?? iconSize ?? theme.iconTheme.size,
+                    color: leadingIconTint ?? iconTint ?? theme.iconTheme.color,
+                    fit: BoxFit.contain,
+                  )
+                : leading is Widget
+                    ? leading
+                    : null
+            : null,
+        title: titleWidget ??
+            (title != null
+                ? Text(
+                    title ?? '',
+                    textAlign: TextAlign.start,
+                    maxLines: maxLines,
+                    overflow: maxLines == null ? null : TextOverflow.ellipsis,
+                    style: (textStyle ?? theme.textTheme.headline6)!.copyWith(
+                      color: fontColor,
+                      fontWeight: fontWeight,
+                      fontSize: fontSize,
+                    ),
+                  )
+                : null),
+        trailing: onTapTrailing != null || trailing != null
+            ? GestureDetector(
+                onTap: onTapTrailing,
+                child: trailing is Widget
+                    ? trailing
+                    : Text(
+                        trailing ?? string(context).viewAll,
+                        style: trailingStyle ??
+                            theme.textTheme.bodyText2!.copyWith(
+                              color: theme.colorScheme.onSecondary,
+                            ),
                       ),
-                    )
-                  : null),
-          trailing: onTapTrailing != null
-              ? IgnorePointer(
-                  ignoring: onTapTrailing == null,
-                  child: GestureDetector(
-                      onTap: onTapTrailing,
-                      child: trailingWidget ??
-                          Text(
-                            trailingLabel ?? string(context).viewAll,
-                            style: trailingStyle ??
-                                theme.textTheme.bodyText2!.copyWith(
-                                  color: theme.colorScheme.onSecondary,
-                                ),
-                          )),
-                )
-              : null),
+              )
+            : null,
+      ),
     );
   }
 }

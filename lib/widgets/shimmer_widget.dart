@@ -87,7 +87,8 @@ class ShimmerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color shimmerColor = this.shimmerColor ?? Theme.of(context).dividerColor;
     Color backgroundColor = this.backgroundColor ?? Theme.of(context).cardColor;
-    BorderRadius? kBorderRadius = radius == null ? null : BorderRadius.circular(radius!);
+    BorderRadius? kBorderRadius =
+        radius == null ? null : BorderRadius.circular(radius!);
 
     return Container(
       margin: margin,

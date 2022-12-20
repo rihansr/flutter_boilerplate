@@ -70,12 +70,12 @@ class LocationSearchDelegate extends SearchDelegate {
                     margin: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 20),
                     child: ListViewBuilder<Location>(
-                      children: snapshot.data,
+                      items: snapshot.data,
                       spacing: const EdgeInsets.symmetric(vertical: 13),
                       divider: Separator.vertical(
                         color: Theme.of(context).disabledColor,
                       ),
-                      onChildSelected: (location) => close(context, location),
+                      onItemSelected: (location) => close(context, location),
                       builder: (location, index) {
                         List<String> splittedAddress =
                             location?.name?.split(', ') ?? [];

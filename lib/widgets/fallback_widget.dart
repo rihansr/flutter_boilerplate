@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class FallbackWidget extends StatelessWidget {
-
   final dynamic check;
   final Widget child;
   final bool loading;
@@ -19,7 +18,6 @@ class FallbackWidget extends StatelessWidget {
     this.expanded = false,
   }) : super(key: key);
 
-
   const FallbackWidget.expand({
     Key? key,
     required this.check,
@@ -27,7 +25,8 @@ class FallbackWidget extends StatelessWidget {
     this.loadingChild,
     this.fallbackChild,
     this.loading = false,
-  }) : expanded = true, super(key: key);
+  })  : expanded = true,
+        super(key: key);
 
   Widget body([Widget? child = const SizedBox.shrink()]) =>
       expanded ? Expanded(child: child!) : child!;

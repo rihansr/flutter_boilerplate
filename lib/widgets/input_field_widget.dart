@@ -48,7 +48,7 @@ class InputField extends StatelessWidget {
 
   /// Action
   final String? Function(String?)? validator;
-  final Function()? onClick;
+  final Function()? onTap;
   final TextInputAction? inputAction;
   final Function(String)? onAction;
   final Function(String?)? onTyping;
@@ -91,7 +91,7 @@ class InputField extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
     this.margin = const EdgeInsets.symmetric(vertical: 8),
     this.borderFocusable = true,
-    this.onClick,
+    this.onTap,
     this.prefixIcon,
     this.onAction,
     this.onTyping,
@@ -122,7 +122,6 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-
     return Container(
       height: height,
       width: width,
@@ -170,7 +169,7 @@ class InputField extends StatelessWidget {
             },
             textInputAction: inputAction,
             onFieldSubmitted: onAction,
-            onTap: onClick,
+            onTap: onTap,
             maxLength: maxCharacters,
             inputFormatters: inputFormatters ?? format(keyboardType),
             validator: validator,
@@ -188,7 +187,7 @@ class InputField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: fillColor ?? theme.disabledColor,
+              fillColor: fillColor ?? theme.colorScheme.onBackground,
               hintText: hint,
               counterStyle: theme.textTheme.subtitle2,
               errorStyle:

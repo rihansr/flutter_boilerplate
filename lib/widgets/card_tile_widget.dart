@@ -18,9 +18,12 @@ class CardTile extends StatelessWidget {
   final Widget? trailing;
   final double leadingSpace;
   final double trailingSpace;
-  final double contentPadding;
+  final double contentSpacing;
   final bool dense;
   final bool denseInside;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
+  final MainAxisSize mainAxisSize;
   final AlignmentGeometry? alignment;
   final Function()? onTap;
 
@@ -33,7 +36,7 @@ class CardTile extends StatelessWidget {
     this.border,
     this.radius = 8,
     this.margin = const EdgeInsets.all(10),
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(12),
     this.elevation,
     this.title,
     this.subtitle,
@@ -41,21 +44,23 @@ class CardTile extends StatelessWidget {
     this.children = const [],
     this.leading,
     this.trailing,
-    this.leadingSpace = 16,
-    this.trailingSpace = 16,
-    this.contentPadding = 16,
+    this.leadingSpace = 12,
+    this.trailingSpace = 12,
+    this.contentSpacing = 4,
     this.dense = false,
     this.denseInside = false,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.crossAxisAlignment = CrossAxisAlignment.stretch,
+    this.mainAxisSize = MainAxisSize.min,
     this.alignment,
     this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     return InkWell(
+      highlightColor: Colors.transparent,
       onTap: onTap,
-      radius: radius,
       child: Container(
         constraints: constraints,
         height: height,
@@ -71,12 +76,12 @@ class CardTile extends StatelessWidget {
               ? null
               : [
                   BoxShadow(
-                    color: theme.shadowColor,
+                    color: Theme.of(context).shadowColor,
                     offset: const Offset(0, 0),
                     blurRadius: elevation!,
                   )
                 ],
-          color: tileColor ?? theme.cardColor,
+          color: tileColor,
         ),
         child: Row(
           children: [
@@ -88,22 +93,23 @@ class CardTile extends StatelessWidget {
                   right: trailing == null ? 0 : trailingSpace,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: mainAxisAlignment,
+                  crossAxisAlignment: crossAxisAlignment,
+                  mainAxisSize: mainAxisSize,
                   children: [
                     if (title != null) title!,
                     if (subtitle != null) ...[
-                      if (title != null) SizedBox(height: contentPadding),
+                      if (title != null) SizedBox(height: contentSpacing),
                       subtitle!,
                     ],
                     if (additional != null) ...[
                       if ((title ?? subtitle) != null)
-                        SizedBox(height: contentPadding),
+                        SizedBox(height: contentSpacing),
                       additional!,
                     ],
                     if (children.isNotEmpty) ...[
                       if ((title ?? subtitle ?? additional) != null)
-                        SizedBox(height: contentPadding),
+                        SizedBox(height: contentSpacing),
                       ...children,
                     ],
                   ],

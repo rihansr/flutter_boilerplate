@@ -19,7 +19,7 @@ Future<void> showNormalDialog({
   String? negativeButtonLabel,
   String? positiveButtonLabel,
   Object? arguments,
-  double radius = 6,
+  double radius = 8,
   EdgeInsets? padding,
   BoxConstraints? constraints,
   Function(dynamic)? callback,
@@ -48,10 +48,10 @@ Future<void> showNormalDialog({
           horizontal: 20,
         ),
         child: Container(
-          padding: padding ?? const EdgeInsets.all(20),
+          padding: padding ?? const EdgeInsets.all(24),
           constraints: constraints ??
               BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.875),
+                  maxHeight: MediaQuery.of(context).size.height * 0.75),
           child: child ??
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

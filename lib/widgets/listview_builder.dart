@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 class ListViewBuilder<T> extends StatelessWidget {
   final ScrollController? controller;
-  final List<T>? children;
+  final Color? background;
+  final double? radius;
+  final List<T>? items;
   final Function(T? item, int index) builder;
   final double? height;
   final double? width;
-  final double? childWidth;
-  final double? childHeight;
-  final double childSpacing;
+  final double? itemWidth;
+  final double? itemHeight;
+  final double itemSpacing;
   final int dummyChildCount;
   final bool isLoading;
   final ScrollPhysics? scrollPhysics;
@@ -18,18 +20,20 @@ class ListViewBuilder<T> extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final Function()? onStartListener;
   final Function()? onEndListener;
-  final Function(T?)? onChildSelected;
+  final Function(T)? onItemSelected;
 
   const ListViewBuilder({
     Key? key,
     this.controller,
-    required this.children,
+    this.background,
+    this.radius,
+    required this.items,
     required this.builder,
     this.height,
     this.width,
-    this.childWidth,
-    this.childHeight,
-    this.childSpacing = 0,
+    this.itemWidth,
+    this.itemHeight,
+    this.itemSpacing = 0,
     this.dummyChildCount = 0,
     this.isLoading = false,
     this.scrollPhysics,
@@ -39,19 +43,21 @@ class ListViewBuilder<T> extends StatelessWidget {
     this.onRefresh,
     this.onStartListener,
     this.onEndListener,
-    this.onChildSelected,
+    this.onItemSelected,
   }) : super(key: key);
 
   const ListViewBuilder.vertical({
     Key? key,
     this.controller,
-    required this.children,
+    this.background,
+    this.radius,
+    required this.items,
     required this.builder,
     this.height,
     this.width,
-    this.childWidth,
-    this.childHeight,
-    this.childSpacing = 0,
+    this.itemWidth,
+    this.itemHeight,
+    this.itemSpacing = 0,
     this.dummyChildCount = 0,
     this.isLoading = false,
     this.scrollPhysics,
@@ -60,19 +66,22 @@ class ListViewBuilder<T> extends StatelessWidget {
     this.onRefresh,
     this.onStartListener,
     this.onEndListener,
-    this.onChildSelected,
-  }) : scrollDirection = Axis.vertical, super(key: key);
+    this.onItemSelected,
+  })  : scrollDirection = Axis.vertical,
+        super(key: key);
 
   const ListViewBuilder.horizontal({
     Key? key,
     this.controller,
-    required this.children,
+    this.background,
+    this.radius,
+    required this.items,
     required this.builder,
     this.height,
     this.width,
-    this.childWidth,
-    this.childHeight,
-    this.childSpacing = 0,
+    this.itemWidth,
+    this.itemHeight,
+    this.itemSpacing = 0,
     this.dummyChildCount = 0,
     this.isLoading = false,
     this.scrollPhysics,
@@ -81,41 +90,50 @@ class ListViewBuilder<T> extends StatelessWidget {
     this.onRefresh,
     this.onStartListener,
     this.onEndListener,
-    this.onChildSelected,
-  }) : scrollDirection = Axis.horizontal, super(key: key);
+    this.onItemSelected,
+  })  : scrollDirection = Axis.horizontal,
+        super(key: key);
 
-  List<T?> dummyItems() => [for (int i = 0; i < dummyChildCount; i++) null];
+  List<T?> dummyItems() => List.generate(dummyChildCount, (index) => null);
 
   @override
   Widget build(BuildContext context) {
-    var items = isLoading ? dummyItems() : children ?? [];
+    var children = isLoading ? dummyItems() : items ?? [];
+    double? width = scrollDirection == Axis.vertical
+        ? (this.width ?? itemWidth)
+        : this.width;
+
+    double? height = scrollDirection == Axis.horizontal
+        ? (this.height ?? itemHeight)
+        : this.height;
+    EdgeInsets spacing =
+        this.spacing ?? const EdgeInsets.fromLTRB(20, 12, 20, 12);
 
     Widget child = ListView.separated(
       controller: controller,
       physics: scrollPhysics ?? const BouncingScrollPhysics(),
-      padding: spacing ??
-          (scrollDirection == Axis.horizontal
-              ? const EdgeInsets.symmetric(horizontal: 20)
-              : const EdgeInsets.symmetric(vertical: 20)),
+      padding: spacing,
       shrinkWrap: true,
-      itemCount: items.length,
+      itemCount: children.length,
       itemBuilder: (_, i) {
         return InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           onTap: () => {
-            if (items.isNotEmpty && items[i] != null)
-              onChildSelected?.call(items[i])
+            if (children.isNotEmpty && children[i] != null)
+              onItemSelected?.call(children[i] as T)
           },
           child: SizedBox(
-            width: childWidth,
-            height: childHeight,
-            child: builder(items[i], i),
+            width: itemWidth,
+            height: itemHeight,
+            child: builder(children[i], i),
           ),
         );
       },
       separatorBuilder: (context, index) {
         return SizedBox(
-          width: scrollDirection == Axis.horizontal ? childSpacing : null,
-          height: scrollDirection == Axis.vertical ? childSpacing : null,
+          width: scrollDirection == Axis.horizontal ? itemSpacing : null,
+          height: scrollDirection == Axis.vertical ? itemSpacing : null,
           child: divider,
         );
       },
@@ -123,16 +141,21 @@ class ListViewBuilder<T> extends StatelessWidget {
     );
 
     return Visibility(
-      visible: isLoading || (children?.isNotEmpty ?? false),
+      visible: isLoading || (items?.isNotEmpty ?? false),
       maintainAnimation: true,
       maintainState: true,
-      child: ConstrainedBox(
+      child: Container(
+        decoration: BoxDecoration(
+            color: background,
+            borderRadius:
+                radius == null ? null : BorderRadius.circular(radius!)),
         constraints: BoxConstraints(
-          maxWidth: width ?? double.infinity,
-          maxHeight: (scrollDirection == Axis.horizontal
-                  ? (height ?? childHeight)
-                  : height) ??
-              double.infinity,
+          maxWidth: width == null
+              ? double.infinity
+              : width + spacing.left + spacing.right,
+          maxHeight: height == null
+              ? double.infinity
+              : height + spacing.top + spacing.bottom,
         ),
         child: onStartListener != null || onEndListener != null
             ? NotificationListener<ScrollUpdateNotification>(

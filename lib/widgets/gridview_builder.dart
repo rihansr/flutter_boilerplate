@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 
 class GridViewBuilder<T> extends StatelessWidget {
   final ScrollController? controller;
-  final List<T>? children;
+  final List<T>? items;
   final Function(T? item, int index) builder;
   final int spanCount;
   final int dummyChildCount;
-  final double? height;
-  final double? width;
   final EdgeInsets? spacing;
   final double? horizontalSpacing;
   final double? verticalSpacing;
@@ -25,12 +23,10 @@ class GridViewBuilder<T> extends StatelessWidget {
   const GridViewBuilder({
     Key? key,
     this.controller,
-    required this.children,
+    required this.items,
     required this.builder,
     this.spanCount = 2,
     this.dummyChildCount = 2,
-    this.height,
-    this.width,
     this.spacing,
     this.childSpacing = 0,
     this.crossAxisSpacing,
@@ -46,11 +42,11 @@ class GridViewBuilder<T> extends StatelessWidget {
     this.onEndListener,
   }) : super(key: key);
 
-  List<T?> dummyItems() => [for (int i = 0; i < dummyChildCount; i++) null];
+  List<T?> dummyItems() => List.generate(dummyChildCount, (index) => null);
 
   @override
   Widget build(BuildContext context) {
-    var items = isLoading ? dummyItems() : children ?? [];
+    var children = isLoading ? dummyItems() : items ?? [];
 
     Widget listItems = GridView.builder(
       controller: controller,
@@ -61,7 +57,7 @@ class GridViewBuilder<T> extends StatelessWidget {
             horizontal: horizontalSpacing ?? 10,
           ),
       shrinkWrap: true,
-      itemCount: items.length,
+      itemCount: children.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: spanCount,
         crossAxisSpacing: crossAxisSpacing ?? childSpacing,
@@ -71,17 +67,17 @@ class GridViewBuilder<T> extends StatelessWidget {
       itemBuilder: (_, i) {
         return InkWell(
           onTap: () => {
-            if (items.isNotEmpty && items[i] != null)
-              onChildSelected?.call(items[i])
+            if (children.isNotEmpty && children[i] != null)
+              onChildSelected?.call(children[i])
           },
-          child: builder(items[i], i),
+          child: builder(children[i], i),
         );
       },
       scrollDirection: Axis.vertical,
     );
 
     return Visibility(
-      visible: isLoading || (children?.isNotEmpty ?? false),
+      visible: isLoading || (items?.isNotEmpty ?? false),
       maintainAnimation: true,
       maintainState: true,
       child: onStartListener != null || onEndListener != null
