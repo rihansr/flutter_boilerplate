@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../shared/strings.dart';
 import '../services/navigation_service.dart';
 import '../shared/styles.dart';
 import '../widgets/button_widget.dart';
@@ -171,7 +172,7 @@ showSimpleDialog({
             onTap: () async =>
                 {Navigator.pop(navigator.context), onTapPositiveButton?.call()},
             title: Text(
-              positiveButtonLabel ?? '',
+              positiveButtonLabel ?? string().yes,
               style: Theme.of(navigator.context).textTheme.bodyText2,
             ),
           ),
@@ -182,7 +183,7 @@ showSimpleDialog({
             onTap: () async =>
                 {Navigator.pop(navigator.context), onTapNegativeButton?.call()},
             title: Text(
-              negativeButtonLabel ?? '',
+              negativeButtonLabel ?? string().no,
               style: Theme.of(navigator.context).textTheme.bodyText2,
             ),
           ),

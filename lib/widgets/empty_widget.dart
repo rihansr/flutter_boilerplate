@@ -10,6 +10,7 @@ class EmptyWidget extends StatelessWidget {
   final String? actionLabel;
   final Color? cardColor;
   final Clip clipBehavior;
+  final bool useSafeArea;
   final Function()? onAction;
 
   const EmptyWidget({
@@ -21,6 +22,7 @@ class EmptyWidget extends StatelessWidget {
     this.cardColor,
     this.actionLabel,
     this.clipBehavior = Clip.none,
+    this.useSafeArea = true,
     this.onAction,
   }) : super(key: key);
 
@@ -37,6 +39,8 @@ class EmptyWidget extends StatelessWidget {
       color: backgound,
       alignment: Alignment.center,
       child: SafeArea(
+        top: useSafeArea,
+        bottom: useSafeArea,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,

@@ -4,6 +4,7 @@ import '../../controllers/dashboard_viewmodel.dart';
 import '../../shared/colors.dart';
 import '../../shared/dimens.dart';
 import '../../widgets/base_widget.dart';
+import '../utils/extensions.dart';
 import '../controllers/location_viewmodel.dart';
 import '../models/location_model.dart';
 import '../widgets/appbar_widget.dart';
@@ -43,47 +44,38 @@ class DashboardView extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  Button(
+                  _Button(
                     label: string(context).httpCall,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    onPressed: () => controller.httpCall(),
-                    leading: Icon(
-                      Icons.http,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.http,
                     loading: controller.isLoading(key: 'Http', orElse: false),
+                    onPressed: () => controller.httpCall(),
                   ),
-                  Button(
+                  _Button(
                     label: string(context).dioCall,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    onPressed: () => controller.dioCall(),
-                    leading: Icon(
-                      Icons.network_cell,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.network_cell,
                     loading: controller.isLoading(key: 'Dio', orElse: false),
+                    onPressed: () => controller.dioCall(),
                   ),
-                  Button(
+                  _Button(
                     label:
                         '${controller.uploadProgress == null ? '' : '${controller.uploadProgress}% '}${string(context).upload}',
-                    fontColor: theme.scaffoldBackgroundColor,
-                    leading: Icon(
-                      Icons.upload,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.upload,
                     onPressed: () => controller.uploadFile(),
                   ),
                   if (controller.url != null)
-                    Button(
+                    _Button(
                       label:
                           '${controller.downloadProgress == null ? '' : '${controller.downloadProgress}% '}${string(context).download}',
-                      fontColor: theme.scaffoldBackgroundColor,
-                      leading: Icon(
-                        Icons.download,
-                        color: theme.scaffoldBackgroundColor,
-                      ),
+                      icon: Icons.download,
                       onPressed: () => controller.downloadFile(),
                     ),
+                  _Button(
+                    label: string(context).payment,
+                    icon: Icons.payment,
+                    loading:
+                        controller.isLoading(key: 'Payment', orElse: false),
+                    onPressed: () => controller.makePaymet(),
+                  ),
                 ],
               ),
             ),
@@ -93,48 +85,31 @@ class DashboardView extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  Button(
+                  _Button(
                     label: appSettings.isDarkTheme()
                         ? string(context).dark
                         : string(context).light,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    leading: Icon(
-                      appSettings.isDarkTheme()
-                          ? Icons.dark_mode
-                          : Icons.light_mode,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: appSettings.isDarkTheme()
+                        ? Icons.dark_mode
+                        : Icons.light_mode,
                     onPressed: () => appSettings.switchTheme,
                   ),
-                  Button(
+                  _Button(
                     label: string(context).language,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    leading: Icon(
-                      Icons.language,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.language,
                     onPressed: () => appSettings.switchLanguage,
                   ),
-                  Button(
+                  _Button(
                     label: string(context).location,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    leading: Icon(
-                      Icons.location_pin,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.location_pin,
                     loading: controller.isLoading(
                         key: 'fetching_location', orElse: false),
-                    onPressed: () => locationProvider(context).findLocation(
-                      setAsDefault: true
-                    ),
+                    onPressed: () => locationProvider(context)
+                        .findLocation(setAsDefault: true),
                   ),
-                  Button(
+                  _Button(
                     label: string(context).searchLocation,
-                    fontColor: theme.scaffoldBackgroundColor,
-                    leading: Icon(
-                      Icons.location_city_sharp,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                    icon: Icons.location_city_sharp,
                     onPressed: () => showSearch(
                       context: context,
                       delegate: LocationSearchDelegate(),
@@ -177,6 +152,37 @@ class DashboardView extends StatelessWidget {
           onTap: (i) => controller.selectedTab = i,
         ),
       ),
+    );
+  }
+}
+
+class _Button extends StatelessWidget {
+  const _Button(
+      {Key? key,
+      required this.label,
+      this.icon,
+      this.loading = false,
+      this.onPressed})
+      : super(key: key);
+
+  final String label;
+  final IconData? icon;
+  final bool loading;
+  final Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Button(
+      loading: loading,
+      label: label,
+      fontColor: context.theme.scaffoldBackgroundColor,
+      leading: icon != null
+          ? Icon(
+              icon,
+              color: context.theme.scaffoldBackgroundColor,
+            )
+          : null,
+      onPressed: onPressed,
     );
   }
 }

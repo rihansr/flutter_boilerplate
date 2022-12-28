@@ -385,7 +385,7 @@ class Api {
     } else if (showToast) {
       style.toast(response.toString(), type: type);
     } else {
-      ScaffoldMessenger.of(navigator.context).showSnackBar(style.snackBarStyle(
+      ScaffoldMessenger.of(navigator.context).showSnackBar(style.snackbar(
         response.toString(),
         actionLabel: actionLabel ??
             (() {

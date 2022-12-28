@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart' as svg;
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../configs/theme_config.dart';
-import '../services/navigation_service.dart';
-import '../shared/strings.dart';
+import '/utils/extensions.dart';
+import '/services/navigation_service.dart';
+import '/shared/strings.dart';
 import 'drawables.dart';
 import 'enums.dart';
 
@@ -15,10 +15,7 @@ final style = Style.value;
 class Style {
   static Style get value => Style._();
   Style._();
-
-  MediaQueryData mediaQuery = MediaQuery.of(navigator.context);
-
-  SnackBar snackBarStyle(
+  SnackBar snackbar(
     String message, {
     MessageType? type,
     String? actionLabel,
@@ -40,8 +37,8 @@ class Style {
           message,
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
-          style: themeConfig.textTheme.bodyText2!.copyWith(
-            color: themeConfig.theme.primaryColorLight,
+          style: navigator.context.textTheme.bodyText2!.copyWith(
+            color: navigator.context.theme.primaryColorLight,
           ),
         ),
         action: (onAction != null)
@@ -55,7 +52,7 @@ class Style {
                           return string().okay;
                       }
                     }()),
-                textColor: themeConfig.theme.primaryColorLight,
+                textColor: navigator.context.theme.primaryColorLight,
                 onPressed: onAction,
               )
             : null,
@@ -95,6 +92,7 @@ class Style {
     String? placeholder,
     BoxFit? placeholderFit,
     Alignment? alignment,
+    BoxShape? shape,
     double radius = 0,
   }) =>
       Container(
@@ -105,8 +103,11 @@ class Style {
         alignment: alignment,
         clipBehavior: clipBehavior,
         decoration: BoxDecoration(
+          shape: shape ?? BoxShape.rectangle,
           color: background,
-          borderRadius: BorderRadius.all(Radius.circular(radius)),
+          borderRadius: shape == BoxShape.circle
+              ? null
+              : BorderRadius.all(Radius.circular(radius)),
         ),
         child: (() {
           placeholder ??= Drawable.placeholder;
@@ -116,7 +117,7 @@ class Style {
           height ??= size;
           width ??= size;
 
-          if (img?.toString().trim().isEmpty ?? true) {
+          if (img == null) {
             return image(placeholder,
                 height: height, width: width, fit: placeholderFit);
           } else if (img is IconData) {
@@ -157,7 +158,7 @@ class Style {
       (() {
         placeholder ??= Drawable.placeholder;
 
-        if (img?.toString().trim().isEmpty ?? true) {
+        if (img == null) {
           return imageProvider(placeholder);
         } else if (img is File) {
           return img.existsSync()
