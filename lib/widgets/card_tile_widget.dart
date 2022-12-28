@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/extensions.dart';
 
 class CardTile extends StatelessWidget {
   final Color? tileColor;
@@ -21,6 +22,9 @@ class CardTile extends StatelessWidget {
   final double contentSpacing;
   final bool dense;
   final bool denseInside;
+  final MainAxisAlignment parentMainAxisAlignment;
+  final CrossAxisAlignment parentCrossAxisAlignment;
+  final MainAxisSize parentMainAxisSize;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -34,7 +38,7 @@ class CardTile extends StatelessWidget {
     this.height,
     this.width,
     this.border,
-    this.radius = 8,
+    this.radius = 0,
     this.margin = const EdgeInsets.all(10),
     this.padding = const EdgeInsets.all(12),
     this.elevation,
@@ -49,6 +53,9 @@ class CardTile extends StatelessWidget {
     this.contentSpacing = 4,
     this.dense = false,
     this.denseInside = false,
+    this.parentMainAxisAlignment = MainAxisAlignment.start,
+    this.parentCrossAxisAlignment = CrossAxisAlignment.center,
+    this.parentMainAxisSize = MainAxisSize.max,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.stretch,
     this.mainAxisSize = MainAxisSize.min,
@@ -76,7 +83,7 @@ class CardTile extends StatelessWidget {
               ? null
               : [
                   BoxShadow(
-                    color: Theme.of(context).shadowColor,
+                    color: context.theme.shadowColor,
                     offset: const Offset(0, 0),
                     blurRadius: elevation!,
                   )
@@ -84,6 +91,9 @@ class CardTile extends StatelessWidget {
           color: tileColor,
         ),
         child: Row(
+          crossAxisAlignment: parentCrossAxisAlignment,
+          mainAxisAlignment: parentMainAxisAlignment,
+          mainAxisSize: parentMainAxisSize,
           children: [
             if (leading != null) leading!,
             Expanded(

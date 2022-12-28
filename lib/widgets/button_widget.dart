@@ -76,7 +76,6 @@ class Button<T> extends StatelessWidget {
       padding: margin,
       child: InkWell(
         onTap: disable || loading ? null : onPressed,
-        radius: radius,
         splashColor: Colors.transparent,
         focusColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -100,6 +99,10 @@ class Button<T> extends StatelessWidget {
                       borderRadius: shape == BoxShape.circle
                           ? null
                           : BorderRadius.circular(radius),
+                      border: Border.all(
+                        color: borderTint,
+                        width: borderSize,
+                      ),
                       color: fillColor,
                     )
                   : ShapeDecoration(

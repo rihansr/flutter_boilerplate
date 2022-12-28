@@ -10,17 +10,15 @@ class Separator extends StatelessWidget {
     key,
     this.size = 1,
     this.color,
-    this.thickness,
-  })  : axis = Axis.horizontal,
-        super(key: key);
+    this.thickness = .75,
+  }) : axis = Axis.horizontal, super(key: key);
 
   const Separator.vertical({
     key,
     this.size = 1,
     this.color,
-    this.thickness,
-  })  : axis = Axis.vertical,
-        super(key: key);
+    this.thickness = .75,
+  }) : axis = Axis.vertical, super(key: key);
 
   @override
   Widget build(BuildContext context) {

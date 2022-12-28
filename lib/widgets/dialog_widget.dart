@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/navigation_service.dart';
 import '../shared/styles.dart';
 import '../widgets/button_widget.dart';
+import 'splitter_widget.dart';
 
 Future<void> showNormalDialog({
   Widget? child,
@@ -21,6 +22,7 @@ Future<void> showNormalDialog({
   Object? arguments,
   double radius = 8,
   EdgeInsets? padding,
+  bool hideHeadline = true,
   BoxConstraints? constraints,
   Function(dynamic)? callback,
   Function()? onTapNegativeButton,
@@ -57,76 +59,68 @@ Future<void> showNormalDialog({
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      const IconButton(
-                        onPressed: null,
-                        icon: SizedBox.shrink(),
-                      ),
-                      Expanded(
-                        child: Text(
-                          headline ?? '',
-                          textAlign: headlineAlign ?? textAlign,
-                          style: Theme.of(context).textTheme.headline3,
+                  if (!hideHeadline)
+                    Row(
+                      children: [
+                        const IconButton(
+                          onPressed: null,
+                          icon: SizedBox.shrink(),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(
-                          Icons.close,
-                          color: Theme.of(context).primaryColor,
-                          size: 24,
+                        Expanded(
+                          child: Text(
+                            headline ?? '',
+                            textAlign: headlineAlign ?? textAlign,
+                            style: Theme.of(context).textTheme.headline3,
+                          ),
                         ),
-                      )
-                    ],
-                  ),
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: Icon(
+                            Icons.close,
+                            color: Theme.of(context).primaryColor,
+                            size: 24,
+                          ),
+                        )
+                      ],
+                    ),
                   if (image != null)
                     Flexible(
                       child: style.image(image, fit: BoxFit.fitWidth),
                     ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 0, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (title != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Text(
-                              title,
-                              textAlign: titleAlign ?? textAlign,
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                          ),
-                        if (subtitle != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Text(
-                              subtitle,
-                              textAlign: subtitleAlign ?? textAlign,
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                          ),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (title != null)
+                        Text(
+                          title,
+                          textAlign: titleAlign ?? textAlign,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      if (title != null && subtitle != null)
+                        const SizedBox(height: 12),
+                      if (subtitle != null)
+                        Text(
+                          subtitle,
+                          textAlign: subtitleAlign ?? textAlign,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: 24),
                   Row(
                     children: [
                       if (negativeButtonLabel != null)
                         Expanded(
                           child: Button(
-                            shape: BoxShape.rectangle,
+                            shape: const StadiumBorder(),
                             label: negativeButtonLabel,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             fillColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            fontColor: Theme.of(context).colorScheme.secondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                                Theme.of(context).colorScheme.onBackground,
+                            fontColor:
+                                Theme.of(context).textTheme.subtitle1?.color,
+                            margin: EdgeInsets.zero,
                             onPressed: () => {
                               Navigator.pop(context),
                               onTapNegativeButton?.call()
@@ -139,14 +133,10 @@ Future<void> showNormalDialog({
                       if (positiveButtonLabel != null)
                         Expanded(
                           child: Button(
-                            shape: BoxShape.rectangle,
+                            shape: const StadiumBorder(),
                             label: positiveButtonLabel,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 8,
-                            ),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            margin: EdgeInsets.zero,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             onPressed: () => {
                               Navigator.pop(context),
                               onTapPositiveButton?.call()
@@ -162,6 +152,43 @@ Future<void> showNormalDialog({
     ),
   ).then((value) => callback?.call(value));
 }
+
+showSimpleDialog({
+  String? positiveButtonLabel,
+  Function()? onTapPositiveButton,
+  String? negativeButtonLabel,
+  Function()? onTapNegativeButton,
+}) =>
+    showNormalDialog(
+      padding: const EdgeInsets.all(0),
+      child: Splitter.vertical(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            dense: true,
+            visualDensity: const VisualDensity(vertical: -4),
+            contentPadding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+            onTap: () async =>
+                {Navigator.pop(navigator.context), onTapPositiveButton?.call()},
+            title: Text(
+              positiveButtonLabel ?? '',
+              style: Theme.of(navigator.context).textTheme.bodyText2,
+            ),
+          ),
+          ListTile(
+            dense: true,
+            visualDensity: const VisualDensity(vertical: -4),
+            contentPadding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
+            onTap: () async =>
+                {Navigator.pop(navigator.context), onTapNegativeButton?.call()},
+            title: Text(
+              negativeButtonLabel ?? '',
+              style: Theme.of(navigator.context).textTheme.bodyText2,
+            ),
+          ),
+        ],
+      ),
+    );
 
 showFullScreenDialog({
   required Widget child,

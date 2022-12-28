@@ -20,7 +20,7 @@ class EmptyWidget extends StatelessWidget {
     this.subtitle,
     this.cardColor,
     this.actionLabel,
-    this.clipBehavior = Clip.antiAlias,
+    this.clipBehavior = Clip.none,
     this.onAction,
   }) : super(key: key);
 
@@ -31,49 +31,51 @@ class EmptyWidget extends StatelessWidget {
     double size = mqSize.height + mqSize.width;
 
     return Container(
-      width: size * .265,
+      width: double.infinity,
       clipBehavior: clipBehavior,
       padding: EdgeInsets.all(size * .015),
       color: backgound,
       alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: image is Widget
-                ? image
-                : style.image(image, fit: BoxFit.fitWidth),
-          ),
-          if (title != null)
-            Padding(
-              padding: EdgeInsets.only(top: size * .015),
-              child: Text(
-                title!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headline5,
-              ),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: image is Widget
+                  ? image
+                  : style.image(image, fit: BoxFit.fitWidth),
             ),
-          if (subtitle != null)
-            Padding(
-              padding: EdgeInsets.only(top: size * .01),
-              child: Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.subtitle1,
+            if (title != null)
+              Padding(
+                padding: EdgeInsets.only(top: size * .015),
+                child: Text(
+                  title!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headline5,
+                ),
               ),
-            ),
-          if (onAction != null)
-            Button(
-              shape: BoxShape.rectangle,
-              margin: EdgeInsets.only(
-                top: size * .015,
+            if (subtitle != null)
+              Padding(
+                padding: EdgeInsets.only(top: size * .01),
+                child: Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.subtitle1,
+                ),
               ),
-              label: actionLabel,
-              onPressed: onAction,
-            ),
-        ],
+            if (onAction != null)
+              Button(
+                shape: BoxShape.rectangle,
+                margin: EdgeInsets.only(
+                  top: size * .015,
+                ),
+                label: actionLabel,
+                onPressed: onAction,
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,8 @@ class GridViewBuilder<T> extends StatelessWidget {
   final Function(T? item, int index) builder;
   final int spanCount;
   final int dummyChildCount;
+  final double? height;
+  final double? width;
   final EdgeInsets? spacing;
   final double? horizontalSpacing;
   final double? verticalSpacing;
@@ -27,6 +29,8 @@ class GridViewBuilder<T> extends StatelessWidget {
     required this.builder,
     this.spanCount = 2,
     this.dummyChildCount = 2,
+    this.height,
+    this.width,
     this.spacing,
     this.childSpacing = 0,
     this.crossAxisSpacing,

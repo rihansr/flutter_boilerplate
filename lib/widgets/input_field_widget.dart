@@ -42,7 +42,7 @@ class InputField extends StatelessWidget {
   final TextStyle? hintStyle;
   final TextCapitalization textCapitalization;
   final int lengthFilter;
-  final double? borderRadius;
+  final double borderRadius;
   final bool bottomBorderOnly;
   final bool autoFocus;
 
@@ -96,7 +96,7 @@ class InputField extends StatelessWidget {
     this.onAction,
     this.onTyping,
     this.lengthFilter = 1,
-    this.borderRadius,
+    this.borderRadius = 6,
     this.onQuery,
     this.fontColor,
     this.hintColor,
@@ -109,13 +109,14 @@ class InputField extends StatelessWidget {
 
   InputBorder boder(Color color) {
     BorderSide borderSide = BorderSide(
-        color: borderTint ?? (borderFocusable ? color : Colors.transparent));
+      color: borderFocusable ? borderTint ?? color : Colors.transparent,
+    );
 
     return bottomBorderOnly
         ? UnderlineInputBorder(borderSide: borderSide)
         : OutlineInputBorder(
             borderSide: borderSide,
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
           );
   }
 
@@ -187,16 +188,17 @@ class InputField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: fillColor ?? theme.colorScheme.onBackground,
+              fillColor: fillColor ?? theme.disabledColor,
               hintText: hint,
               counterStyle: theme.textTheme.subtitle2,
               errorStyle:
                   theme.textTheme.subtitle2?.copyWith(color: theme.errorColor),
-              hintStyle: (hintStyle ?? theme.textTheme.subtitle1)?.copyWith(
-                color: hintColor ?? theme.hintColor,
-                fontSize: hintSize ?? fontSize,
-                fontWeight: hintWeight ?? fontWeight,
-              ),
+              hintStyle: hintStyle ??
+                  theme.textTheme.subtitle1?.copyWith(
+                    color: hintColor ?? theme.hintColor,
+                    fontSize: hintSize ?? fontSize,
+                    fontWeight: hintWeight ?? fontWeight,
+                  ),
               prefixIconConstraints: BoxConstraints(
                 minWidth: theme.iconTheme.size! + padding.right,
                 maxHeight: theme.iconTheme.size!,
@@ -213,7 +215,7 @@ class InputField extends StatelessWidget {
               disabledBorder: boder(theme.disabledColor),
               enabledBorder: boder(theme.dividerColor),
               border: boder(theme.dividerColor),
-              focusedBorder: boder(theme.hintColor),
+              focusedBorder: boder(theme.primaryColor),
               errorBorder: boder(theme.errorColor),
               focusedErrorBorder: boder(theme.errorColor),
             ),

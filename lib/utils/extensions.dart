@@ -1,12 +1,17 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../services/navigation_service.dart';
 import '../utils/debug.dart';
 
 final extension = Extension.function;
@@ -42,6 +47,18 @@ class Extension {
     return permit;
   }
 
+  Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
+      String assetName) async {
+    String svgString =
+        await DefaultAssetBundle.of(navigator.context).loadString(assetName);
+    DrawableRoot svgDrawableRoot =
+        await svg.fromSvgString(svgString, assetName);
+    ui.Picture picture = svgDrawableRoot.toPicture();
+    ui.Image image = await picture.toImage(80, 80);
+    ByteData? bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+  }
+
   void screenOrientation({bool landscape = false, fullscreen = false}) => {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
             overlays: fullscreen ? [] : SystemUiOverlay.values),
@@ -56,7 +73,10 @@ class Extension {
       };
 
   Future<File> pickPhoto(ImageSource source,
-      {double? maxWidth, double? maxHeight, int? imageQuality}) async {
+      {Function(File file)? onPicked,
+      double? maxWidth,
+      double? maxHeight,
+      int? imageQuality}) async {
     String path = '';
     await extension
         .hasPermission(source == ImageSource.camera
@@ -75,7 +95,7 @@ class Extension {
         path = pickedFile?.path ?? '';
       }
     });
-
+    if (File(path).existsSync()) onPicked?.call(File(path));
     return File(path);
   }
 
@@ -185,9 +205,10 @@ class Extension {
           ? await launchUrlString(url!)
           : throw 'Could not launch $url';
 
-  String generateRandomString({int length = 6}) {
-    const chars =
-        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  String generateRandomString({int length = 6, digitsOnly = false}) {
+    const digits = "1234567890";
+    const letters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
+    var chars = digitsOnly ? digits : (letters + digits);
     Random rnd = Random();
     return String.fromCharCodes(Iterable.generate(
         length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
@@ -204,21 +225,7 @@ extension CapExtension on String {
       .join(" ");
 }
 
-extension DigitExtension on dynamic {
-  String stringAsFixed(int fractionDigits) {
-    if (this == null) return '';
-    double digit = double.parse("$this");
-    return this.toStringAsFixed((digit % 1) == 0 ? 0 : fractionDigits);
-  }
-}
-
 extension DateTimeParser on dynamic {
-  /* bool dateExpired({int multipliedBy = 1}) => validator.isEmpty(this)
-      ? false
-      : validator.isNotMatch(this, 0) &&
-          (int.parse('${this ?? 0}') * multipliedBy) <
-              DateTime.now().toUtc().millisecondsSinceEpoch; */
-
   String get parseTime {
     int duration = 0;
     duration = int.parse('$this');
@@ -234,7 +241,7 @@ extension DateTimeParser on dynamic {
     return '${hour}h ${minutes}m';
   }
 
-  String? remainingTime(
+  String? timeRemains(
       {String existingFormat = 'dd/MM/yyyy', String orElse = ''}) {
     if (this == null) return orElse;
     DateTime date1 =
@@ -296,6 +303,44 @@ extension DateTimeParser on dynamic {
       return 'Just now';
     }
   }
+}
+
+extension ContextExtension on BuildContext? {
+  MediaQueryData get mediaQuery => MediaQuery.of(this ?? navigator.context);
+  EdgeInsets get padding => mediaQuery.padding;
+  Size get size => mediaQuery.size;
+  double get height => size.height;
+  double get width => size.width;
+
+  ThemeData get theme => Theme.of(this ?? navigator.context);
+  TextTheme get textTheme => theme.textTheme;
+  IconThemeData get iconTheme => theme.iconTheme;
+  ColorScheme get colorScheme => theme.colorScheme;
+}
+
+extension ObjectConversion on Object? {
+  String stringAsFixed({int fractionDigits = 2, String orElse = ''}) {
+    if (this == null) return orElse;
+    double digit = this?.toDouble() ?? 0.0;
+    return digit.toStringAsFixed((digit % 1) == 0 ? 0 : fractionDigits);
+  }
+
+  double toDouble({double orElse = 0}) =>
+      this != null ? double.parse('$this') : orElse;
+
+  int toInteger({int orElse = 0}) => this != null ? int.parse('$this') : orElse;
+
+  bool toBool({bool orElse = false}) => this == null
+      ? orElse
+      : this is bool
+          ? this as bool
+          : '$this' == '1';
+
+  int fromBool({int orElse = 0}) => this is bool
+      ? this as bool
+          ? 1
+          : 0
+      : toInteger(orElse: orElse);
 }
 
 double toDouble(dynamic val) => double.parse('${val ?? 0}');
