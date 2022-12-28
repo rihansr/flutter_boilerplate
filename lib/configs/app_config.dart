@@ -33,13 +33,29 @@ const config = '''
 {
   "test": {
     "base": {
-      "url": ""
+      "url": "https://example.wpengine.com"
+      },
+    "stripe": {
+      "base_url": "https://api.stripe.com/v1",
+      "payment_logo": "https://devathon.com/wp-content/uploads/2020/02/Top-10-Payment-Gateways-Devathon.png",
+      "credentials": {
+        "publish_key": "pk_test_BPZRRegJm0Y8KuX7nBElSfpq00hLnSTszJ",
+        "secret_key": "sk_test_m14bnxcpkAaoZcQDDgOIYmaH007kykXYqQ"
       }
+    }
   },
   "production": {
     "base": {
-      "url": ""
+      "url": "https://example.wpengine.com"
+      },
+    "stripe": {
+      "base_url": "https://api.stripe.com/v1",
+      "payment_logo": "https://devathon.com/wp-content/uploads/2020/02/Top-10-Payment-Gateways-Devathon.png",
+      "credentials": {
+        "publish_key": "pk_test_BPZRRegJm0Y8KuX7nBElSfpq00hLnSTszJ",
+        "secret_key": "sk_test_m14bnxcpkAaoZcQDDgOIYmaH007kykXYqQ"
       }
+    }
   }
 }
 ''';

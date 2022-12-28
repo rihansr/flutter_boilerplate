@@ -1,12 +1,18 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import '../shared/shared_prefs.dart';
+import '../configs/app_config.dart';
 import '../services/api.dart';
+import '../services/server_env.dart';
 import '../shared/icons.dart';
 import '../shared/strings.dart';
 import '../utils/debug.dart';
 import '../utils/extensions.dart';
+import '../views/stripe_payment.dart';
+import '../widgets/dialog_widget.dart';
 import 'base_viewmodel.dart';
 
 class DashboardViewModel extends BaseViewModel {
@@ -127,5 +133,88 @@ class DashboardViewModel extends BaseViewModel {
         .then((response) => {
               setDownloadProgress = null,
             });
+  }
+
+  makePaymet() async {
+    Map<String, String>? sessionData = await _createStripeSession();
+    if (sessionData != null) {
+      showFullScreenDialog(
+        child: StripePayment(url: sessionData['url']!),
+        onDispose: (isSuccessful) => {},
+      );
+    } else {
+      showMessage(string().someErrorOccured);
+    }
+  }
+
+  Future<Map<String, String>?> _createStripeSession() async {
+    setBusy(true, key: 'Payment');
+
+    double price = 100;
+    double shipping = 0;
+    Map<String, dynamic> body = {
+      "mode": 'payment',
+      "payment_method_types[0]": "card",
+      "customer_email": 'johndoe@example.com',
+      "success_url": ServerEnv.paymentSuccessUrl,
+      "cancel_url": ServerEnv.paymentCancelUrl,
+
+      // Shipping
+      if (shipping != 0) ...{
+        "phone_number_collection[enabled]": "true",
+        "shipping_options[0][shipping_rate_data][type]": "fixed_amount",
+        "shipping_options[0][shipping_rate_data][fixed_amount][amount]":
+            (shipping * 100).floor().toString(),
+        "shipping_options[0][shipping_rate_data][fixed_amount][currency]":
+            'usd',
+        "shipping_options[0][shipping_rate_data][display_name]": 'Charge',
+        "shipping_address_collection[allowed_countries][0]":
+            sharedPrefs.address?.countryCode ?? '',
+        "custom_text[shipping_address][message]":
+            "Please note that we can't guarantee 2-day delivery for PO boxes at this time."
+      },
+
+      // Additional
+      /* "custom_text[submit][message]":
+          "We'll email you instructions on how to get started.", */
+    };
+
+    for (int i = 0; i < 2; i++) {
+      body.addAll(
+        {
+          "line_items[$i][price_data][product_data][images][0]":
+              ServerEnv.stripePaymentLogo,
+          "line_items[$i][price_data][product_data][name]": 'Cart items',
+          "line_items[$i][quantity]": '1',
+          "line_items[$i][price_data][currency]": 'usd',
+          "line_items[$i][price_data][unit_amount]":
+              (price * 100).floor().toString(),
+        },
+      );
+    }
+
+    var response = await api.invoke(
+      via: InvokeType.http,
+      method: Method.post,
+      endpoint: ServerEnv.stripeCreateSession,
+      justifyResponse: true,
+      headers: {
+        HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.authorizationHeader:
+            'Bearer ${appConfig.configs['stripe']['credentials']['secret_key']}',
+        HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
+      },
+      body: body,
+    );
+
+    setBusy(false, key: 'Payment');
+
+    if (response.data != null && response.data.containsKey("url")) {
+      return {
+        'url': response.data['url'],
+        'pi': response.data["payment_intent"]
+      };
+    }
+    return null;
   }
 }
