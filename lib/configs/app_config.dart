@@ -42,6 +42,13 @@ const config = '''
         "publish_key": "pk_test_BPZRRegJm0Y8KuX7nBElSfpq00hLnSTszJ",
         "secret_key": "sk_test_m14bnxcpkAaoZcQDDgOIYmaH007kykXYqQ"
       }
+    },
+    "ssl": {
+      "credentials": {
+        "ipn_url": "https://www.thegreatspoon.com/ipn",
+        "store_id": "thegr63d1436813746",
+        "store_password": "thegr63d1436813746@ssl"
+      }
     }
   },
   "production": {
@@ -54,6 +61,13 @@ const config = '''
       "credentials": {
         "publish_key": "pk_test_BPZRRegJm0Y8KuX7nBElSfpq00hLnSTszJ",
         "secret_key": "sk_test_m14bnxcpkAaoZcQDDgOIYmaH007kykXYqQ"
+      }
+    },
+     "ssl": {
+      "credentials": {
+        "ipn_url": "https://www.thegreatspoon.com/ipn",
+        "store_id": "thegr63d1436813746",
+        "store_password": "thegr63d1436813746@ssl"
       }
     }
   }

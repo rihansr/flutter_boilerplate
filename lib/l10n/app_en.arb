@@ -135,6 +135,8 @@
   "yes": "Yes",
   "no": "No",
   "payment": "Payment",
+  "stripe": "Stripe",
+  "ssl": "SSL",
   "settings": "Settings",
   "home": "Home",
   "profile": "Profile",
