@@ -1,7 +1,7 @@
 import '../configs/app_config.dart';
 
 class ServerEnv {
-  static String baseUrl = '${appConfig.configs['base']['url']}/wp-json';
+  static String baseUrl = '${appConfig.configs['base']['url']}';
 
   //Stripe getway endpoints
   static String stripeBaseUrl = appConfig.configs['stripe']['base_url'];

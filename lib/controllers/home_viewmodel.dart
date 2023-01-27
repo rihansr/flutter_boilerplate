@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,16 +15,23 @@ class HomeViewModel extends BaseViewModel {
 
   httpCall() async {
     setBusy(true, key: 'Http');
-    await api
-        .invoke(
-          via: InvokeType.http,
-          method: Method.get,
-          endpoint: 'https://httpbin.org',
-          id: 'get',
-        )
-        .then((response) => debug.print(response.data));
-    setBusy(false, key: 'Http');
+
+    final port = ReceivePort();
+    await Isolate.spawn(_httpCall, {'port': port.sendPort});
+    port.listen((message) {
+      debug.print(message);
+      setBusy(false, key: 'Http');
+    });
   }
+
+  static _httpCall(Map<String, dynamic> data) async => await api
+      .invoke(
+        via: InvokeType.http,
+        method: Method.get,
+        endpoint: 'get',
+        showMessage: false,
+      )
+      .then((response) => data['port'].send(response.data));
 
   dioCall() async {
     setBusy(true, key: 'Dio');

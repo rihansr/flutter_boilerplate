@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
             AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle(settings.themeMode),
           child: MaterialApp(
+            scaffoldMessengerKey: navigator.scaffoldMessengerKey,
             navigatorKey: navigator.navigatorKey,
             locale: settings.locale,
             debugShowCheckedModeBanner: false,

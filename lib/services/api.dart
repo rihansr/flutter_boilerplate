@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_http_cache/dio_http_cache.dart' as dio;
 import 'package:http/http.dart' as http;
@@ -59,7 +58,7 @@ class Api {
     }());
 
     endpoint = _buildEndpoint(
-      baseUrl: baseUrl,
+      baseUrl: baseUrl ?? ServerEnv.baseUrl,
       endpoint: endpoint,
       id: id,
       query: via == InvokeType.http ? queryParams : null,
@@ -170,40 +169,6 @@ class Api {
                           statusCode: response.statusCode ?? 404,
                           data: response.data),
                     );
-
-              /* case InvokeType.multipart:
-                if (body == null && body != Map) return Response();
-                int progress = -1;
-                var formData = dio.FormData();
-
-                (body as Map).forEach((key, value) {
-                  value is http.MultipartFile
-                      ? formData.files.add(MapEntry(
-                          '$key',
-                          value as dio.MultipartFile,
-                        ))
-                      : formData.fields.add(MapEntry('$key', '$value'));
-                }); */
-
-              /* http.MultipartRequest request = http.MultipartRequest(
-                    method.name.toUpperCase(), Uri.parse(endpoint));
-
-                (body as Map).forEach((key, value) {
-                  value is http.MultipartFile
-                      ? request.files.add(value)
-                      : request.fields.addAll({'$key': '$value'});
-                });
-
-                request.headers.addAll(headers!);
-                http.StreamedResponse streamedResponse = await request.send();
-                final responseToString =
-                    await streamedResponse.stream.bytesToString();
-                http.Response response = http.Response(
-                    responseToString, streamedResponse.statusCode);
-                return Response(
-                    statusCode: response.statusCode,
-                    data: jsonDecode(response.body)); */
-
               case InvokeType.http:
               default:
                 http.Client client = http.Client();
@@ -385,7 +350,7 @@ class Api {
     } else if (showToast) {
       style.toast(response.toString(), type: type);
     } else {
-      ScaffoldMessenger.of(navigator.context).showSnackBar(style.snackbar(
+      navigator.scaffoldMessengerKey.currentState?.showSnackBar(style.snackbar(
         response.toString(),
         actionLabel: actionLabel ??
             (() {

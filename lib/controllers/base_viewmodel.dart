@@ -1,4 +1,6 @@
 import 'dart:collection';
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/navigation_service.dart';
 import '../shared/enums.dart';
@@ -10,6 +12,22 @@ class BaseViewModel extends ChangeNotifier {
   final HashMap<String, bool> _loading = HashMap();
   bool _busy = false;
   bool get busy => _busy;
+
+  void register(ReceivePort port, String key, {Function(dynamic)? listen}) {
+    bool isSuccess = IsolateNameServer.registerPortWithName(port.sendPort, key);
+
+    if (!isSuccess) {
+      IsolateNameServer.removePortNameMapping(key);
+      register(port, key, listen: listen);
+    } else {
+      port.listen(listen);
+    }
+  }
+
+  send(String key, [Object? data]) {
+    final send = IsolateNameServer.lookupPortByName(key);
+    send?.send(data);
+  }
 
   void setBusy(bool status, {String? key, bool afterBinding = false}) {
     _busy = status;

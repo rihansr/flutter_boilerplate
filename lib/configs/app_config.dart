@@ -10,14 +10,14 @@ class AppConfig {
   AppConfig._();
   AppMode appMode = AppMode.test;
 
-  late Map<String, dynamic> configs;
+  //late Map<String, dynamic> configs;
 
   init(AppMode mode) {
     appMode = mode;
 
     debug.enabled = mode == AppMode.test;
 
-    configs = jsonDecode(config)[mode.name];
+    //configs = jsonDecode(config)[mode.name];
 
     _setConfigs();
   }
@@ -26,14 +26,15 @@ class AppConfig {
     // Set configs here
   }
 
-  bool get isInProduction => appMode == AppMode.production;
-}
+  Map<String, dynamic> get configs => jsonDecode(config)[appMode.name];
 
-const config = '''
+  bool get isInProduction => appMode == AppMode.production;
+
+  static const config = '''
 {
   "test": {
     "base": {
-      "url": "https://example.wpengine.com"
+      "url": "https://httpbin.org"
       },
     "stripe": {
       "base_url": "https://api.stripe.com/v1",
@@ -53,7 +54,7 @@ const config = '''
   },
   "production": {
     "base": {
-      "url": "https://example.wpengine.com"
+      "url": "https://httpbin.org"
       },
     "stripe": {
       "base_url": "https://api.stripe.com/v1",
@@ -73,3 +74,4 @@ const config = '''
   }
 }
 ''';
+}
