@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -12,25 +10,8 @@ import 'configs/app_settings.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
 import 'services/navigation_service.dart';
-import 'shared/constants.dart';
-import 'shared/shared_prefs.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await sharedPrefs.init();
-  await Future.wait([
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]),
-    sharedPrefs.init(),
-    if (Platform.isIOS)
-      Future.delayed(const Duration(seconds: kSplashDelayInSec)),
-  ]);
-  appConfig.init(AppMode.test);
-  //FlutterNativeSplash.remove();
-  runApp(const MyApp());
-}
+void main() async => appConfig.init().then((_) => runApp(const MyApp()));
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

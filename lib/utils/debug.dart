@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 final Debug debug = Debug.value;
 
@@ -7,7 +8,7 @@ class Debug {
 
   Debug._();
 
-  var enabled = true;
+  var enabled = kDebugMode;
 
   print(dynamic message, {bool bounded = false, String? boundedText}) =>
       {if (enabled) _log(message, bounded, boundedText)};

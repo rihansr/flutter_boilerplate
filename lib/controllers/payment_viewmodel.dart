@@ -86,7 +86,7 @@ class PaymentViewModel extends BaseViewModel {
     var response = await api.invoke(
       via: InvokeType.http,
       method: Method.post,
-      endpoint: ServerEnv.stripeCreateSession,
+      baseUrl: ServerEnv.stripeCreateSession,
       justifyResponse: true,
       headers: {
         HttpHeaders.acceptHeader: 'application/json',

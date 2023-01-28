@@ -5,9 +5,9 @@ class ServerEnv {
 
   //Stripe getway endpoints
   static String stripeBaseUrl = appConfig.configs['stripe']['base_url'];
-  static String stripePaymentMethod = "$stripeBaseUrl/payment_methods";
-  static String stripeMakeCustomer = "$stripeBaseUrl/customers";
-  static String stripeCreateSession = "$stripeBaseUrl/checkout/sessions";
+  static const String stripePaymentMethod = 'payment_methods';
+  static const String stripeMakeCustomer = 'customers';
+  static const String stripeCreateSession = 'checkout/sessions';
   static String stripePaymentLogo = appConfig.configs['stripe']['payment_logo'];
 
   static String paymentSuccessUrl = "$baseUrl/success";

@@ -1,4 +1,5 @@
 import 'dart:isolate';
+import 'package:boilerplate/services/server_env.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,8 +28,9 @@ class HomeViewModel extends BaseViewModel {
   static _httpCall(Map<String, dynamic> data) async => await api
       .invoke(
         via: InvokeType.http,
-        method: Method.get,
+        baseUrl: ServerEnv.baseUrl,
         endpoint: 'get',
+        method: Method.get,
         showMessage: false,
       )
       .then((response) => data['port'].send(response.data));
@@ -38,9 +40,9 @@ class HomeViewModel extends BaseViewModel {
     await api
         .invoke(
           via: InvokeType.dio,
-          method: Method.post,
-          baseUrl: 'https://httpbin.org',
+          baseUrl: ServerEnv.baseUrl,
           endpoint: 'post',
+          method: Method.post,
           queryParams: {'id': 56, 's': 'john'},
           body: {'name': 'John Doe', 'email': 'johndoe@example.com'},
           showMessage: true,
@@ -57,9 +59,9 @@ class HomeViewModel extends BaseViewModel {
         api
             .invoke(
               via: InvokeType.multipart,
-              method: Method.post,
-              baseUrl: 'https://v2.convertapi.com',
+               baseUrl: 'https://v2.convertapi.com',
               endpoint: 'upload',
+              method: Method.post,
               body: {
                 'filename': await MultipartFile.fromFile(
                   file.path,
@@ -96,7 +98,7 @@ class HomeViewModel extends BaseViewModel {
         .invoke(
           via: InvokeType.download,
           method: Method.get,
-          endpoint: url,
+          baseUrl: url ?? '',
           path: path,
           onProgress: (p0) => setDownloadProgress = p0,
         )

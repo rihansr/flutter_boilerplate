@@ -1,5 +1,5 @@
 // Splash delay
-const int kSplashDelayInSec = 1;
+const Duration kSplashDelay = Duration(milliseconds: 1000);
 
 // font
 const String kFontFamily = "Poppins";

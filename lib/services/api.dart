@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio_http_cache/dio_http_cache.dart' as dio;
 import 'package:http/http.dart' as http;
-import '../services/server_env.dart';
 import '../shared/enums.dart';
 import '../shared/strings.dart';
 import '../shared/styles.dart';
@@ -23,8 +22,8 @@ class Api {
 
   Future<Response> invoke({
     InvokeType? via,
-    String? baseUrl,
-    required var endpoint,
+    required String baseUrl,
+    String? endpoint,
     var path,
     Method method = Method.get,
     Map<String, String>? headers,
@@ -33,11 +32,11 @@ class Api {
     var body,
     Duration timeout = const Duration(seconds: 20),
     String? contentType,
-    bool contentTypeSupported = true,
+    bool contentTypeSupported = false,
     String? token,
     dynamic id,
-    bool enableEncoding = false,
-    bool justifyResponse = false,
+    bool enableEncoding = true,
+    bool justifyResponse = true,
     bool showMessage = true,
     Encoding? encoding,
     bool enableCaching = false,
@@ -58,7 +57,7 @@ class Api {
     }());
 
     endpoint = _buildEndpoint(
-      baseUrl: baseUrl ?? ServerEnv.baseUrl,
+      baseUrl: baseUrl,
       endpoint: endpoint,
       id: id,
       query: via == InvokeType.http ? queryParams : null,
@@ -67,31 +66,20 @@ class Api {
     headers ??= _buildHeaders(
       token: token,
       contentType: contentType,
-      contentTypeSupported: contentTypeSupported,
-    )..addAll(additionalHeaders ?? {});
+      contentTypeSupported: contentTypeSupported ? true : contentType != null,
+    );
 
-    if (body != null) body = enableEncoding ? jsonEncode(body) : body;
+    if (additionalHeaders?.isNotEmpty ?? false) {
+      headers.addAll(additionalHeaders!);
+    }
+
+    if (body != null) {
+      body = enableEncoding && via != InvokeType.multipart
+          ? jsonEncode(body)
+          : body;
+    }
 
     encoding ??= enableEncoding ? utf8 : null;
-
-    if (!enableCaching) enableCaching = cacheDuration != null;
-
-    dio.BaseOptions baseOptions = dio.BaseOptions(
-      method: method.name,
-      baseUrl: baseUrl ?? ServerEnv.baseUrl,
-      connectTimeout: timeout.inMilliseconds,
-      headers: headers,
-      queryParameters: queryParams,
-      validateStatus: (status) => true,
-    );
-
-    final dio.LogInterceptor logInterceptor = dio.LogInterceptor(
-      request: false,
-      requestHeader: false,
-      responseHeader: false,
-      error: false,
-      logPrint: (s) => {},
-    );
 
     Response response = await _exceptionHandler(
           (() async {
@@ -99,7 +87,25 @@ class Api {
               case InvokeType.dio:
               case InvokeType.multipart:
               case InvokeType.download:
+                dio.BaseOptions baseOptions = dio.BaseOptions(
+                  method: method.name,
+                  baseUrl: baseUrl,
+                  connectTimeout: timeout.inMilliseconds,
+                  headers: headers,
+                  queryParameters: queryParams,
+                  validateStatus: (status) => true,
+                );
+
+                final dio.LogInterceptor logInterceptor = dio.LogInterceptor(
+                  request: false,
+                  requestHeader: false,
+                  responseHeader: false,
+                  error: false,
+                  logPrint: (s) => {},
+                );
+
                 int progress = -1;
+
                 dio.Dio dioClient = dio.Dio(
                   (() {
                     switch (via) {
@@ -121,7 +127,7 @@ class Api {
                     if (enableCaching)
                       dio.DioCacheManager(
                         dio.CacheConfig(
-                          baseUrl: baseUrl ?? ServerEnv.baseUrl,
+                          baseUrl: baseUrl,
                           defaultRequestMethod: method.name,
                         ),
                       ).interceptor,
@@ -130,7 +136,7 @@ class Api {
 
                 return await dioClient
                     .request(
-                      endpoint,
+                      endpoint!,
                       data: via == InvokeType.multipart
                           ? dio.FormData.fromMap(body as Map<String, dynamic>)
                           : body,
@@ -138,7 +144,7 @@ class Api {
                           ? dio.buildCacheOptions(
                               cacheDuration ?? const Duration(days: 7),
                               primaryKey: cachePrimaryKey ?? endpoint,
-                              subKey: cacheSubKey,
+                              subKey: cacheSubKey ?? queryParams?.toString(),
                               forceRefresh: chacheForceRefresh,
                             )
                           : null,
@@ -175,7 +181,7 @@ class Api {
                 switch (method) {
                   case Method.post:
                     return await client
-                        .post(Uri.parse(endpoint),
+                        .post(Uri.parse(endpoint!),
                             headers: headers, body: body, encoding: encoding)
                         .timeout(
                           timeout,
@@ -188,7 +194,7 @@ class Api {
                         );
                   case Method.put:
                     return await client
-                        .put(Uri.parse(endpoint),
+                        .put(Uri.parse(endpoint!),
                             headers: headers, body: body, encoding: encoding)
                         .timeout(
                           timeout,
@@ -201,7 +207,7 @@ class Api {
                         );
                   case Method.delete:
                     return await client
-                        .delete(Uri.parse(endpoint),
+                        .delete(Uri.parse(endpoint!),
                             headers: headers, body: body, encoding: encoding)
                         .timeout(
                           timeout,
@@ -214,7 +220,7 @@ class Api {
                         );
                   default:
                     return await client
-                        .get(Uri.parse(endpoint), headers: headers)
+                        .get(Uri.parse(endpoint!), headers: headers)
                         .timeout(
                           timeout,
                           onTimeout: () => throw TimeoutException(null),
@@ -232,23 +238,23 @@ class Api {
         Response();
 
     return justifyResponse
-        ? _justifyResponse(response, showMessage: showMessage)
+        ? _justifyResponse(response, tag: endpoint, showMessage: showMessage)
         : response;
   }
 
   String _buildEndpoint(
-          {String? baseUrl,
-          String? endpoint,
+          {required String baseUrl,
+           String? endpoint,
           var id,
           Map<String, dynamic>? query}) =>
-      '${(baseUrl != null ? '$baseUrl/' : '') + (endpoint ?? '')}'
+      '${(endpoint?.isNotEmpty ?? false) ? '$baseUrl$endpoint' : baseUrl}'
       '${id != null ? '/$id' : ''}'
-      '${(query?.isNotEmpty ?? false) ? '?${query?.entries.map((e) => '${e.key}=${e.value?.toString() ?? ''}').join('&')}' : ''}';
+      '${(query?.isNotEmpty ?? false) ? '?${query!.entries.map((e) => e.value == null ? '' : '${e.key}=${e.value}').join('&')}' : ''}';
 
   Map<String, String> _buildHeaders(
           {String? token,
           String? contentType,
-          bool contentTypeSupported = true}) =>
+          bool contentTypeSupported = false}) =>
       {
         HttpHeaders.acceptHeader: 'application/json',
         if (contentTypeSupported)
@@ -292,18 +298,18 @@ class Api {
 
   Response _justifyResponse(
     Response response, {
+    String tag = "API",
     bool showMessage = true,
   }) {
-    debug.print('Status Code: ${response.statusCode}\nData: ${response.data}',
-        boundedText: 'API');
-
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         response.statusCode == 202 ||
         response.statusCode == 409) {
+      debug.print(response.data, boundedText: tag);
       return response;
-    } else if (showMessage) {
-      _showErrorMessage(response, type: MessageType.error);
+    } else {
+      _showErrorMessage(response,
+          tag: tag, logOnly: !showMessage, type: MessageType.error);
     }
     return response.copyWith(data: null);
   }
@@ -368,52 +374,28 @@ class Api {
       ));
     }
   }
-
-  Future<Response> download(String url, savePath,
-      [Function(int)? onProgress]) async {
-    await _exceptionHandler((() async {
-      /* await dio.Dio()
-          .get(
-            url,
-            onReceiveProgress: (count, total) => {
-              if (total != -1) onProgress?.call((count / total * 100).toInt())
-            },
-            options: dio.Options(
-              responseType: dio.ResponseType.bytes,
-              followRedirects: false,
-              receiveTimeout: 0,
-            ),
-          )
-          .then((response) => Response(
-              statusCode: response.statusCode ?? 404,
-              data: jsonDecode(response.data))); */
-      var cancelToken = dio.CancelToken();
-
-      await dio.Dio().download(
-        url,
-        savePath,
-        cancelToken: cancelToken,
-        onReceiveProgress: (count, total) =>
-            {if (total != -1) onProgress?.call((count / total * 100).toInt())},
-      );
-    }()));
-    return Response();
-  }
 }
 
 class Response {
   final int statusCode;
+  final String? message;
   final dynamic data;
 
-  Response({this.statusCode = 404, this.data});
+  Response({this.statusCode = 404, this.message, this.data});
 
   Response copyWith({
     int? statusCode,
+    String? message,
     dynamic data,
   }) {
     return Response(
       statusCode: statusCode ?? this.statusCode,
+      message: message ?? this.message,
       data: data ?? this.data,
     );
   }
+
+  @override
+  String toString() =>
+      'Status Code: $statusCode\nMessage: $message\nData: $data';
 }
