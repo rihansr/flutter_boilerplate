@@ -3,7 +3,6 @@ import 'package:boilerplate/services/server_env.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import '../services/api.dart';
 import '../utils/debug.dart';
 import '../utils/extensions.dart';
@@ -17,23 +16,17 @@ class HomeViewModel extends BaseViewModel {
   httpCall() async {
     setBusy(true, key: 'Http');
 
-    final port = ReceivePort();
-    await Isolate.spawn(_httpCall, {'port': port.sendPort});
-    port.listen((message) {
-      debug.print(message);
-      setBusy(false, key: 'Http');
-    });
+    await api
+        .invoke(
+          via: InvokeType.http,
+          baseUrl: ServerEnv.baseUrl,
+          endpoint: 'get',
+          method: Method.get,
+          showMessage: false,
+        )
+        .then((response) => debug.print(response.data));
+    setBusy(false, key: 'Http');
   }
-
-  static _httpCall(Map<String, dynamic> data) async => await api
-      .invoke(
-        via: InvokeType.http,
-        baseUrl: ServerEnv.baseUrl,
-        endpoint: 'get',
-        method: Method.get,
-        showMessage: false,
-      )
-      .then((response) => data['port'].send(response.data));
 
   dioCall() async {
     setBusy(true, key: 'Dio');
@@ -45,8 +38,7 @@ class HomeViewModel extends BaseViewModel {
           method: Method.post,
           queryParams: {'id': 56, 's': 'john'},
           body: {'name': 'John Doe', 'email': 'johndoe@example.com'},
-          showMessage: true,
-          contentTypeSupported: false,
+          enableCaching: true,
           cacheDuration: const Duration(seconds: 30),
         )
         .then((response) => debug.print(response.data));
@@ -59,7 +51,7 @@ class HomeViewModel extends BaseViewModel {
         api
             .invoke(
               via: InvokeType.multipart,
-               baseUrl: 'https://v2.convertapi.com',
+              baseUrl: 'https://v2.convertapi.com',
               endpoint: 'upload',
               method: Method.post,
               body: {
@@ -91,19 +83,28 @@ class HomeViewModel extends BaseViewModel {
       {downloadProgress = percentage, notifyListeners()};
 
   downloadFile() async {
-    var documentDirectory = await getApplicationDocumentsDirectory();
-    var path = '${documentDirectory.path}/pic.jpg';
+    final port = ReceivePort();
+    await Isolate.spawn(_downloadFile, [
+      port.sendPort,
+      url ?? '',
+    ]);
+    port.listen((message) {
+      setDownloadProgress = message;
+    });
+  }
+
+  static _downloadFile(List arguments) async {
+    //var documentDirectory = await getApplicationDocumentsDirectory();
+    //var path = '${documentDirectory.path}/pic.jpg';
 
     await api
         .invoke(
           via: InvokeType.download,
           method: Method.get,
-          baseUrl: url ?? '',
-          path: path,
-          onProgress: (p0) => setDownloadProgress = p0,
+          baseUrl: arguments[1],
+          showMessage: false,
+          onProgress: (p0) => arguments[0].send(p0),
         )
-        .then((response) => {
-              setDownloadProgress = null,
-            });
+        .then((response) => arguments[0].send(null));
   }
 }

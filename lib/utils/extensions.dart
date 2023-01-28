@@ -72,31 +72,21 @@ class Extension {
         ]),
       };
 
-  Future<File> pickPhoto(ImageSource source,
+      Future<File> pickPhoto(ImageSource source,
       {Function(File file)? onPicked,
       double? maxWidth,
       double? maxHeight,
       int? imageQuality}) async {
-    String path = '';
-    await extension
-        .hasPermission(source == ImageSource.camera
-            ? Permission.camera
-            : Permission.storage)
-        .then((hasPermission) async {
-      if (!hasPermission) {
-        path = '';
-      } else {
-        var pickedFile = await ImagePicker().pickImage(
-          source: source,
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-          imageQuality: imageQuality,
-        );
-        path = pickedFile?.path ?? '';
-      }
-    });
-    if (File(path).existsSync()) onPicked?.call(File(path));
-    return File(path);
+    var pickedFile = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+    );
+
+    File file = File(pickedFile?.path ?? '');
+    if (file.existsSync()) onPicked?.call(file);
+    return file;
   }
 
   Future<dynamic> pickFiles(

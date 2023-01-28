@@ -247,7 +247,7 @@ class Api {
            String? endpoint,
           var id,
           Map<String, dynamic>? query}) =>
-      '${(endpoint?.isNotEmpty ?? false) ? '$baseUrl$endpoint' : baseUrl}'
+      '${(endpoint?.isNotEmpty ?? false) ? '$baseUrl/$endpoint' : baseUrl}'
       '${id != null ? '/$id' : ''}'
       '${(query?.isNotEmpty ?? false) ? '?${query!.entries.map((e) => e.value == null ? '' : '${e.key}=${e.value}').join('&')}' : ''}';
 
