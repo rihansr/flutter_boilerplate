@@ -1,3 +1,4 @@
+import 'package:boilerplate/shared/styles.dart';
 import 'package:flutter/material.dart';
 import '../../utils/extensions.dart';
 import '../../widgets/button_widget.dart';
@@ -12,7 +13,7 @@ class CustomButton extends StatelessWidget {
       : super(key: key);
 
   final String label;
-  final IconData? icon;
+  final dynamic icon;
   final bool loading;
   final Function()? onPressed;
 
@@ -23,10 +24,17 @@ class CustomButton extends StatelessWidget {
       label: label,
       fontColor: context.theme.scaffoldBackgroundColor,
       leading: icon != null
-          ? Icon(
-              icon,
-              color: context.theme.scaffoldBackgroundColor,
-            )
+          ? icon is IconData
+              ? Icon(
+                  icon,
+                  size: 24,
+                  color: context.theme.scaffoldBackgroundColor,
+                )
+              : style.image(
+                  icon,
+                  size: 24,
+                  color: context.theme.scaffoldBackgroundColor,
+                )
           : null,
       onPressed: onPressed,
     );

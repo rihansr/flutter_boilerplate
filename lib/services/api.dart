@@ -244,17 +244,18 @@ class Api {
 
   String _buildEndpoint(
           {required String baseUrl,
-           String? endpoint,
+          String? endpoint,
           var id,
           Map<String, dynamic>? query}) =>
       '${(endpoint?.isNotEmpty ?? false) ? '$baseUrl/$endpoint' : baseUrl}'
       '${id != null ? '/$id' : ''}'
       '${(query?.isNotEmpty ?? false) ? '?${query!.entries.map((e) => e.value == null ? '' : '${e.key}=${e.value}').join('&')}' : ''}';
 
-  Map<String, String> _buildHeaders(
-          {String? token,
-          String? contentType,
-          bool contentTypeSupported = false}) =>
+  Map<String, String> _buildHeaders({
+    String? token,
+    String? contentType,
+    bool contentTypeSupported = false,
+  }) =>
       {
         HttpHeaders.acceptHeader: 'application/json',
         if (contentTypeSupported)
@@ -326,7 +327,7 @@ class Api {
   }) {
     response = (() {
       if (response is Response) {
-        var data = jsonDecode(response.data);
+        var data = response.data;
         if (data is Map) {
           return data.containsKey('error')
               ? data['error'] is Map

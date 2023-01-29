@@ -129,13 +129,16 @@
       }
     }
   },
-  "someErrorOccured": "Some Error Occured!",
-  "requestTimeout": "Request timed out!",
+  "someErrorOccured": "কিছু ত্রুটি ঘটেছে!",
+  "requestTimeout": "অনুরোধ সময় শেষ হয়েছে!",
+  "paymentSuccessful": "পেমেন্ট সফল হয়েছে!",
+  "paymentFailed": "ওহ! আপনার পেমেন্ট ব্যর্থ হয়েছে",
   "@_OTHERS": "<-----------------OTHERS----------------->",
   "yes": "হ্যাঁ",
   "no": "না",
   "payment": "পেমেন্ট",
   "stripe": "স্ত্রাইপ",
+  "paypal": "পেপাল",
   "ssl": "এসএসএল",
   "settings": "সেটিংস",
   "home": "হোম",

@@ -15,9 +15,9 @@ class Debug {
 
   _log(dynamic message, bool bounded, String? boundedText) {
     log(
-      '${bounded || boundedText != null ? '\n========${boundedText ?? ''}======================================================\n' : ''}'
+      '${bounded || boundedText != null ? '\n<=====${boundedText ?? ''}=====>\n' : ''}'
       '$message'
-      '${bounded || boundedText != null ? '\n========${boundedText ?? ''}======================================================\n' : ''}',
+      '${bounded || boundedText != null ? '\n<=====${boundedText ?? ''}=====>\n' : ''}',
     );
   }
 }
