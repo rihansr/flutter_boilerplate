@@ -25,6 +25,7 @@ class InputField extends StatelessWidget {
   final bool obscureText;
   final TextAlign textAlign;
   final int? maxCharacters;
+  final int? minLines;
   final int maxLines;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -73,6 +74,7 @@ class InputField extends StatelessWidget {
     this.subtitleSpacing = const EdgeInsets.only(bottom: 8),
     this.obscureText = false,
     this.textAlign = TextAlign.start,
+    this.minLines = 1,
     this.maxLines = 1,
     this.suffixIcon,
     this.typeable = true,
@@ -180,6 +182,7 @@ class InputField extends StatelessWidget {
             keyboardType: keyboardType,
             textAlign: textAlign,
             obscureText: obscureText,
+            minLines: minLines,
             maxLines: maxLines,
             style: (textStyle ?? theme.textTheme.bodyText1)?.copyWith(
               color: fontColor,

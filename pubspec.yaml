@@ -20,31 +20,32 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter_svg: ^1.1.6
   flutter_svg_provider: ^1.0.3
-  image_picker: ^0.8.6
-  file_picker: ^5.2.4
-  path_provider: ^2.0.11
-  mime: ^1.0.3
+  image_picker: ^0.8.6+1
+  file_picker: ^5.2.5
+  path_provider: ^2.0.12
+  mime: ^1.0.4
 
   # UI
   responsive_framework: ^0.2.0
   flutter_native_splash: ^2.2.16
   flutter_launcher_icons: ^0.9.3
   carousel_slider: ^4.2.1
-  syncfusion_flutter_sliders: ^20.4.38
+  syncfusion_flutter_sliders: ^20.4.49
 
   # Web
-  url_launcher: ^6.1.7
+  url_launcher: ^6.1.9
   webview_flutter: ^4.0.2
 
   # State Management
   provider: ^6.0.5
 
   # Local DB
-  shared_preferences: ^2.0.15
+  shared_preferences: ^2.0.17
 
   # Network
   http: ^0.13.5
   dio_http_cache: ^0.3.0
+  web_socket_channel: ^2.3.0
 
   # Encryption
   encrypt: ^5.0.1
@@ -52,12 +53,12 @@ dependencies:
   # Loading/Animation
   shimmer: ^2.0.0
   flutter_spinkit: ^5.1.0
-  lottie: ^2.1.0
+  lottie: ^2.2.0
 
   # Location/Map
   geolocator: ^9.0.2
   geocoding: ^2.0.5
-  google_maps_flutter: ^2.2.2
+  google_maps_flutter: ^2.2.3
   flutter_polyline_points: ^1.0.0
 
   # Other
@@ -65,7 +66,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   fluttertoast: ^8.1.2
   intl: ^0.17.0
-  badges: ^2.0.3
+  badges: ^3.0.2
   permission_handler: ^10.2.0
 
   # Payment

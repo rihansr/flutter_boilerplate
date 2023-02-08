@@ -152,5 +152,7 @@
   "light": "লাইট মোড",
   "location": "লোকেশন",
   "searchLocation": "সার্চ লোকেশন",
-  "searchYourLocation": "আপনার লোকেশন সার্চ করুন"
+  "searchYourLocation": "আপনার লোকেশন সার্চ করুন",
+  "writeMessage": "বার্তা লিখুন...",
+  "socketBot": "সকেট বট"
 }

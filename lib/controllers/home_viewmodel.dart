@@ -46,7 +46,7 @@ class HomeViewModel extends BaseViewModel {
   }
 
   uploadFile() async {
-    await extension.pickPhoto(ImageSource.gallery).then((file) async {
+    await extension.pickPhoto(ImageSource.camera).then((file) async {
       if (file.existsSync()) {
         api
             .invoke(

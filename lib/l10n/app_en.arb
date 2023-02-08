@@ -152,5 +152,7 @@
   "light": "Light Mode",
   "location": "Location",
   "searchLocation": "Search Location",
-  "searchYourLocation": "Search your location"
+  "searchYourLocation": "Search your location",
+  "writeMessage": "Write message...",
+  "socketBot": "Socket Bot"
 }

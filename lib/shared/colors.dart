@@ -12,8 +12,10 @@ class ColorPalette {
   Color onSecondary;
   Color scaffold;
   Color background;
+  Color onBackground;
   Color card;
   Color shadow;
+  Color onShadow;
   Color buttonText;
   Color icon;
   Color focus;
@@ -33,8 +35,10 @@ class ColorPalette {
     required this.onSecondary,
     required this.scaffold,
     required this.background,
+    required this.onBackground,
     required this.card,
     required this.shadow,
+    required this.onShadow,
     required this.buttonText,
     required this.icon,
     required this.focus,
@@ -50,13 +54,15 @@ class ColorPalette {
         primary: const Color(0xFFFC8019),
         onPrimary: const Color(0xFFEEA734),
         primaryLight: const Color(0xFF1C1C1C),
-        primaryDark: const Color(0xFFFFFFFF),
+        primaryDark: const Color(0xFF1C1C1C),
         secondary: const Color(0xFF8FB404),
         onSecondary: const Color(0xFFFAE5C2),
         scaffold: const Color(0xFF2B2B2B),
         background: const Color(0xFF1C1C1C),
+        onBackground: const Color(0xFFF1F1F1),
         card: const Color(0xFF1C1C1C),
         shadow: const Color(0x1AFC8019),
+        onShadow: const Color(0x19FFFFFF),
         buttonText: const Color(0xFFFFFFFF),
         icon: const Color(0xFFFFFFFF),
         focus: const Color(0xFFFFF2E8),
@@ -74,11 +80,13 @@ class ColorPalette {
         primaryLight: const Color(0xFFFFFFFF),
         primaryDark: const Color(0xFF1C1C1C),
         secondary: const Color(0xFF8FB404),
-        onSecondary: const Color(0xFFFAE5C2),
-        scaffold: const Color(0xFFFFFBF8),
+        onSecondary: const Color(0xFFFFF2E8),
+        scaffold: const Color(0xFFFCF8F4),
         background: const Color(0xFFFFFFFF),
+        onBackground: const Color(0xFFF1F1F1),
         card: const Color(0xFFFFFFFF),
         shadow: const Color(0x1AFC8019),
+        onShadow: const Color(0x19000000),
         buttonText: const Color(0xFFFFFFFF),
         icon: const Color(0xFF1C1B1B),
         focus: const Color(0xFFFFF2E8),
