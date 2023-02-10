@@ -18,8 +18,10 @@ class CounterBadge extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     return Badge(
       showBadge: count != 0,
-      badgeColor: theme.primaryColor,
-      animationType: BadgeAnimationType.slide,
+      badgeStyle: BadgeStyle(
+        badgeColor: theme.primaryColor,
+        padding: const EdgeInsets.all(5),
+      ),
       badgeContent: Text(
         '$count',
         style: theme.textTheme.bodyText1!.copyWith(
@@ -27,7 +29,6 @@ class CounterBadge extends StatelessWidget {
           fontSize: 11,
         ),
       ),
-      padding: const EdgeInsets.all(5),
       position: position ?? BadgePosition.topEnd(end: 2, top: 6),
       child: child,
     );
