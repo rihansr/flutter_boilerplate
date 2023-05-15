@@ -37,7 +37,7 @@ class Style {
           message,
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
-          style: navigator.context.textTheme.bodyText2!.copyWith(
+          style: navigator.context.textTheme.bodyMedium!.copyWith(
             color: navigator.context.theme.primaryColorLight,
           ),
         ),

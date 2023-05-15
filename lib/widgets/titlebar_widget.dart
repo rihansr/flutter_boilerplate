@@ -111,7 +111,7 @@ class TitleBar extends StatelessWidget {
                     textAlign: TextAlign.start,
                     maxLines: maxLines,
                     overflow: maxLines == null ? null : TextOverflow.ellipsis,
-                    style: (textStyle ?? theme.textTheme.headline6)!.copyWith(
+                    style: (textStyle ?? theme.textTheme.titleLarge)!.copyWith(
                       color: fontColor,
                       fontWeight: fontWeight,
                       fontSize: fontSize,
@@ -126,7 +126,7 @@ class TitleBar extends StatelessWidget {
                     : Text(
                         trailing ?? string(context).viewAll,
                         style: trailingStyle ??
-                            theme.textTheme.bodyText2!.copyWith(
+                            theme.textTheme.bodyMedium!.copyWith(
                               color: theme.colorScheme.onSecondary,
                             ),
                       ),

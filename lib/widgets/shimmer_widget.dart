@@ -3,11 +3,11 @@ import 'package:shimmer/shimmer.dart';
 
 class ShimmerWidget extends StatelessWidget {
   final Object? shape;
-  final double? size;
-  final double? width;
-  final double? height;
+  final num? size;
+  final num? width;
+  final num? height;
   final EdgeInsets? margin;
-  final double? radius;
+  final num? radius;
   final Color? baseColor;
   final Color? highlightColor;
   final Color? shimmerColor;
@@ -15,23 +15,25 @@ class ShimmerWidget extends StatelessWidget {
 
   const ShimmerWidget({
     Key? key,
-    this.shape,
+    this.shape = const StadiumBorder(),
     this.size,
-    this.width,
-    this.height,
+    width,
+    height,
     this.margin,
-    this.radius = 6,
+    this.radius,
     this.baseColor,
     this.highlightColor,
     this.shimmerColor,
     this.backgroundColor,
-  }) : super(key: key);
+  })  : width = width ?? size,
+        height = height ?? size,
+        super(key: key);
 
   const ShimmerWidget.rectangle({
     Key? key,
     this.size,
-    this.width,
-    this.height,
+    width,
+    height,
     this.margin,
     this.radius = 6,
     this.baseColor,
@@ -39,19 +41,21 @@ class ShimmerWidget extends StatelessWidget {
     this.shimmerColor,
     this.backgroundColor,
   })  : shape = BoxShape.rectangle,
+        width = width ?? size,
+        height = height ?? size,
         super(key: key);
 
   const ShimmerWidget.circle({
     Key? key,
     this.size,
-    this.width,
-    this.height,
     this.margin,
     this.baseColor,
     this.highlightColor,
     this.shimmerColor,
     this.backgroundColor,
   })  : shape = BoxShape.circle,
+        height = size,
+        width = size,
         radius = null,
         super(key: key);
 
@@ -59,7 +63,7 @@ class ShimmerWidget extends StatelessWidget {
     Key? key,
     this.shape,
     this.margin,
-    this.radius = 6,
+    this.radius,
     this.baseColor,
     this.highlightColor,
     this.shimmerColor,
@@ -74,7 +78,7 @@ class ShimmerWidget extends StatelessWidget {
     this.shape,
     this.margin,
     this.size,
-    this.radius = 6,
+    this.radius,
     this.baseColor,
     this.highlightColor,
     this.shimmerColor,
@@ -88,14 +92,14 @@ class ShimmerWidget extends StatelessWidget {
     Color shimmerColor = this.shimmerColor ?? Theme.of(context).dividerColor;
     Color backgroundColor = this.backgroundColor ?? Theme.of(context).cardColor;
     BorderRadius? kBorderRadius =
-        radius == null ? null : BorderRadius.circular(radius!);
+        radius == null ? null : BorderRadius.circular(radius!.toDouble());
 
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
         period: const Duration(milliseconds: 750),
-        baseColor: baseColor ?? shimmerColor.withOpacity(.75),
-        highlightColor: highlightColor ?? shimmerColor.withOpacity(.325),
+        baseColor: baseColor ?? shimmerColor.withOpacity(.5),
+        highlightColor: highlightColor ?? shimmerColor.withOpacity(.25),
         child: DecoratedBox(
           decoration: shape == null
               ? BoxDecoration(
@@ -114,7 +118,10 @@ class ShimmerWidget extends StatelessWidget {
                       shape: shape as ShapeBorder,
                       color: backgroundColor,
                     ),
-          child: SizedBox(width: width, height: height),
+          child: SizedBox(
+            width: width?.toDouble(),
+            height: height?.toDouble(),
+          ),
         ),
       ),
     );

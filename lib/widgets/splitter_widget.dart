@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Splitter extends StatelessWidget {
   final List<Widget> children;
   final List<int> flexes;
+  final int defaultFlex;
   final double spacing;
   final Widget? spacer;
   final Axis axis;
@@ -15,6 +16,7 @@ class Splitter extends StatelessWidget {
     required this.axis,
     this.children = const [],
     this.flexes = const [],
+    this.defaultFlex = 0,
     this.spacing = 24,
     this.spacer,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -26,6 +28,7 @@ class Splitter extends StatelessWidget {
     key,
     this.children = const [],
     this.flexes = const [],
+    this.defaultFlex = 0,
     this.spacing = 16,
     this.spacer,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -38,6 +41,7 @@ class Splitter extends StatelessWidget {
     key,
     this.children = const [],
     this.flexes = const [],
+    this.defaultFlex = 0,
     this.spacing = 16,
     this.spacer,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -52,7 +56,7 @@ class Splitter extends StatelessWidget {
     List<Widget> children = [
       for (int i = 0; i < this.children.length; i++)
         if (this.children.length >= i + 1) ...[
-          (flexes[i] ?? 0) == 0
+          (flexes[i] ?? defaultFlex) == 0
               ? this.children[i]
               : Expanded(
                   flex: flexes[i] ?? 1,

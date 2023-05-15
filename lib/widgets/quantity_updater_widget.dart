@@ -110,7 +110,7 @@ class _QuantityUpdaterState extends State<QuantityUpdater> {
                 child: Text(
                   '${widget.value ?? count}'.padLeft(2, '0'),
                   style: widget.style?.counterStyle ??
-                      theme.textTheme.bodyText1?.copyWith(
+                      theme.textTheme.bodyLarge?.copyWith(
                         color: widget.style?.contentColor ?? theme.primaryColor,
                       ),
                 ),

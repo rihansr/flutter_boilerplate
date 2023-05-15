@@ -62,20 +62,24 @@ class Button<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle labelStyle =
-        (this.labelStyle ?? Theme.of(context).textTheme.button)!.copyWith(
-      color: disable ? Theme.of(context).textTheme.subtitle1?.color : fontColor,
+        (this.labelStyle ?? Theme.of(context).textTheme.labelLarge)!.copyWith(
+      color:
+          disable ? Theme.of(context).textTheme.titleMedium?.color : fontColor,
       fontSize: fontSize,
       fontWeight: fontWeight,
     );
 
     Color? fillColor = disable
-        ? Theme.of(context).disabledColor
+        ? Theme.of(context).dividerColor
         : this.fillColor ?? Theme.of(context).primaryColor;
 
     return Padding(
       padding: margin,
       child: InkWell(
-        onTap: disable || loading ? null : onPressed,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          if (!(disable || loading)) onPressed?.call();
+        },
         splashColor: Colors.transparent,
         focusColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -119,9 +123,9 @@ class Button<T> extends StatelessWidget {
             children: loading
                 ? [
                     SizedBox(
-                      width: labelStyle.fontSize! * 2.175,
+                      width: labelStyle.fontSize! * 2,
                       child: SpinKitThreeBounce(
-                        size: labelStyle.fontSize! * 1.45,
+                        size: labelStyle.fontSize! * 1.25,
                         color: labelStyle.color,
                       ),
                     )

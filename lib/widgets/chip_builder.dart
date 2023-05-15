@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class ChipBuilder<T,V> extends StatefulWidget {
+class ChipBuilder<T, V> extends StatefulWidget {
   final List<String>? labels;
   final V? value;
   final List<T>? groupValues;
@@ -51,10 +51,10 @@ class ChipBuilder<T,V> extends StatefulWidget {
         super(key: key);
 
   @override
-  State<ChipBuilder<T,V>> createState() => _ChipBuilderState<T,V>();
+  State<ChipBuilder<T, V>> createState() => _ChipBuilderState<T, V>();
 }
 
-class _ChipBuilderState<T,V> extends State<ChipBuilder<T,V>> {
+class _ChipBuilderState<T, V> extends State<ChipBuilder<T, V>> {
   List<T> _selectedChips = [];
 
   set _slectChip(T? item) {
@@ -161,7 +161,7 @@ class ChipItem<T> extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       label: Text(label ?? '...'),
       selected: isSelected,
-      labelStyle: (style?.labelStyle ?? theme.textTheme.bodyText2)!.copyWith(
+      labelStyle: (style?.labelStyle ?? theme.textTheme.bodyMedium)!.copyWith(
         color: isSelected
             ? style?.selectedFontColor ?? theme.primaryColorLight
             : style?.unselectedFontColor,
@@ -170,7 +170,8 @@ class ChipItem<T> extends StatelessWidget {
           ? RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(style!.radius!))
           : null,
-      backgroundColor: style?.unselectedChipColor ?? theme.backgroundColor,
+      backgroundColor:
+          style?.unselectedChipColor ?? theme.colorScheme.background,
       selectedColor: style?.selectedChipColor ?? theme.colorScheme.secondary,
       showCheckmark: false,
       onSelected: (bool isSelected) => {

@@ -57,7 +57,7 @@ class EmptyWidget extends StatelessWidget {
                 child: Text(
                   title!,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.headline5,
+                  style: theme.textTheme.headlineSmall,
                 ),
               ),
             if (subtitle != null)
@@ -66,7 +66,7 @@ class EmptyWidget extends StatelessWidget {
                 child: Text(
                   subtitle!,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleMedium,
                 ),
               ),
             if (onAction != null)

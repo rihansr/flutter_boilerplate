@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ListViewBuilder<T> extends StatelessWidget {
   final ScrollController? controller;
   final Color? background;
+  final bool reverse;
   final double? radius;
   final List<T>? items;
   final Function(T? item, int index) builder;
@@ -26,6 +27,7 @@ class ListViewBuilder<T> extends StatelessWidget {
     Key? key,
     this.controller,
     this.background,
+    this.reverse = false,
     this.radius,
     required this.items,
     required this.builder,
@@ -50,6 +52,7 @@ class ListViewBuilder<T> extends StatelessWidget {
     Key? key,
     this.controller,
     this.background,
+    this.reverse = false,
     this.radius,
     required this.items,
     required this.builder,
@@ -74,6 +77,7 @@ class ListViewBuilder<T> extends StatelessWidget {
     Key? key,
     this.controller,
     this.background,
+    this.reverse = false,
     this.radius,
     required this.items,
     required this.builder,
@@ -111,6 +115,7 @@ class ListViewBuilder<T> extends StatelessWidget {
 
     Widget child = ListView.separated(
       controller: controller,
+      reverse: reverse,
       physics: scrollPhysics ?? const BouncingScrollPhysics(),
       padding: spacing,
       shrinkWrap: true,
@@ -169,16 +174,28 @@ class ListViewBuilder<T> extends StatelessWidget {
                 },
                 child: onRefresh == null
                     ? child
-                    : RefreshIndicator(
-                        onRefresh: onRefresh!,
-                        child: child,
+                    : LayoutBuilder(
+                        builder: (context, constraints) => RefreshIndicator(
+                          onRefresh: onRefresh!,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight),
+                            child: child,
+                          ),
+                        ),
                       ),
               )
             : onRefresh == null
                 ? child
-                : RefreshIndicator(
-                    onRefresh: onRefresh!,
-                    child: child,
+                : LayoutBuilder(
+                    builder: (context, constraints) => RefreshIndicator(
+                      onRefresh: onRefresh!,
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: child,
+                      ),
+                    ),
                   ),
       ),
     );

@@ -39,7 +39,7 @@ class _SwitchWidgetState extends State<SwitchWidget> {
         scale: 0.65,
         child: CupertinoSwitch(
           activeColor: Theme.of(context).colorScheme.onPrimary,
-          value: switchState,
+          value: widget.maintainState ? switchState : (widget.value ?? false),
           onChanged: (state) => {
             widget.maintainState
                 ? setState(() => switchState = state)

@@ -28,6 +28,7 @@ ThemeData theming(ThemeMode mode) {
   }
 
   return ThemeData(
+    useMaterial3: true,
     fontFamily: kFontFamily,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     pageTransitionsTheme: const PageTransitionsTheme(
@@ -48,7 +49,6 @@ ThemeData theming(ThemeMode mode) {
       ),
     ),
     primaryColor: colorPalette.primary,
-    backgroundColor: colorPalette.background,
     dividerColor: colorPalette.divider,
     splashColor: colorPalette.focus,
     focusColor: colorPalette.focus,
@@ -56,24 +56,9 @@ ThemeData theming(ThemeMode mode) {
     scaffoldBackgroundColor: colorPalette.scaffold,
     primaryColorDark: colorPalette.primaryDark,
     primaryColorLight: colorPalette.primaryLight,
-    colorScheme: ColorScheme(
-      brightness: mode == ThemeMode.light ? Brightness.light : Brightness.dark,
-      primary: colorPalette.primary,
-      onPrimary: colorPalette.onPrimary,
-      secondary: colorPalette.secondary,
-      onSecondary: colorPalette.onSecondary,
-      background: colorPalette.background,
-      onBackground: colorPalette.background,
-      surface: colorPalette.scaffold,
-      onSurface: colorPalette.scaffold,
-      error: colorPalette.error,
-      onError: colorPalette.error,
-    ),
     cardColor: colorPalette.card,
     hintColor: colorPalette.hint,
     disabledColor: colorPalette.disable,
-    errorColor: colorPalette.error,
-    toggleableActiveColor: colorPalette.primary,
     iconTheme: IconThemeData(
       color: colorPalette.icon,
       size: 24,
@@ -126,67 +111,67 @@ ThemeData theming(ThemeMode mode) {
       ),
     ),
     textTheme: TextTheme(
-      headline1: TextStyle(
+      displayLarge: TextStyle(
         fontSize: 36,
         fontWeight: FontWeight.w700,
         color: colorPalette.title,
         height: 1.39,
       ),
-      headline2: TextStyle(
+      displayMedium: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: colorPalette.title,
         height: 1.43,
       ),
-      headline3: TextStyle(
+      displaySmall: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: colorPalette.title,
         height: 1.5,
       ),
-      headline4: TextStyle(
+      headlineMedium: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: colorPalette.title,
         height: 1.5,
       ),
-      headline5: TextStyle(
+      headlineSmall: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: colorPalette.title,
         height: 1.44,
       ),
-      headline6: TextStyle(
+      titleLarge: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: colorPalette.title,
         height: 1.5,
       ),
-      bodyText1: TextStyle(
+      bodyLarge: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorPalette.title,
         height: 1.43,
       ),
-      bodyText2: TextStyle(
+      bodyMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: colorPalette.title,
         height: 1.43,
       ),
-      subtitle1: TextStyle(
+      titleMedium: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w300,
         color: colorPalette.subtitle,
         height: 1.5,
       ),
-      subtitle2: TextStyle(
+      titleSmall: TextStyle(
         fontSize: 10,
         fontWeight: FontWeight.w300,
         color: colorPalette.subtitle,
         height: 1.4,
       ),
-      button: TextStyle(
+      labelLarge: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorPalette.buttonText,
@@ -204,6 +189,67 @@ ThemeData theming(ThemeMode mode) {
       backgroundColor: colorPalette.primary,
       foregroundColor: colorPalette.onPrimary,
     ),
+    switchTheme: SwitchThemeData(
+      thumbColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return null;
+        }
+        if (states.contains(MaterialState.selected)) {
+          return colorPalette.primary;
+        }
+        return null;
+      }),
+      trackColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return null;
+        }
+        if (states.contains(MaterialState.selected)) {
+          return colorPalette.primary;
+        }
+        return null;
+      }),
+    ),
+    radioTheme: RadioThemeData(
+      fillColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return null;
+        }
+        if (states.contains(MaterialState.selected)) {
+          return colorPalette.primary;
+        }
+        return null;
+      }),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return null;
+        }
+        if (states.contains(MaterialState.selected)) {
+          return colorPalette.primary;
+        }
+        return null;
+      }),
+    ),
+    colorScheme: ColorScheme(
+      brightness: mode == ThemeMode.light ? Brightness.light : Brightness.dark,
+      primary: colorPalette.primary,
+      onPrimary: colorPalette.onPrimary,
+      secondary: colorPalette.secondary,
+      onSecondary: colorPalette.onSecondary,
+      background: colorPalette.background,
+      onBackground: colorPalette.background,
+      surface: colorPalette.scaffold,
+      onSurface: colorPalette.scaffold,
+      error: colorPalette.error,
+      onError: colorPalette.error,
+    )
+        .copyWith(background: colorPalette.background)
+        .copyWith(error: colorPalette.error),
   );
 }
 

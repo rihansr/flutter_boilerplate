@@ -43,7 +43,7 @@ Future<void> showNormalDialog({
       child: Dialog(
         clipBehavior: Clip.antiAlias,
         alignment: Alignment.center,
-        backgroundColor: background ?? Theme.of(context).backgroundColor,
+        backgroundColor: background ?? Theme.of(context).colorScheme.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radius),
         ),
@@ -71,7 +71,7 @@ Future<void> showNormalDialog({
                           child: Text(
                             headline ?? '',
                             textAlign: headlineAlign ?? textAlign,
-                            style: Theme.of(context).textTheme.headline3,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                         ),
                         IconButton(
@@ -96,7 +96,7 @@ Future<void> showNormalDialog({
                         Text(
                           title,
                           textAlign: titleAlign ?? textAlign,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       if (title != null && subtitle != null)
                         const SizedBox(height: 12),
@@ -104,7 +104,7 @@ Future<void> showNormalDialog({
                         Text(
                           subtitle,
                           textAlign: subtitleAlign ?? textAlign,
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                     ],
                   ),
@@ -120,7 +120,7 @@ Future<void> showNormalDialog({
                             fillColor:
                                 Theme.of(context).colorScheme.onBackground,
                             fontColor:
-                                Theme.of(context).textTheme.subtitle1?.color,
+                                Theme.of(context).textTheme.titleMedium?.color,
                             margin: EdgeInsets.zero,
                             onPressed: () => {
                               Navigator.pop(context),
@@ -173,7 +173,7 @@ showSimpleDialog({
                 {Navigator.pop(navigator.context), onTapPositiveButton?.call()},
             title: Text(
               positiveButtonLabel ?? string().yes,
-              style: Theme.of(navigator.context).textTheme.bodyText2,
+              style: Theme.of(navigator.context).textTheme.bodyMedium,
             ),
           ),
           ListTile(
@@ -184,7 +184,7 @@ showSimpleDialog({
                 {Navigator.pop(navigator.context), onTapNegativeButton?.call()},
             title: Text(
               negativeButtonLabel ?? string().no,
-              style: Theme.of(navigator.context).textTheme.bodyText2,
+              style: Theme.of(navigator.context).textTheme.bodyMedium,
             ),
           ),
         ],
@@ -205,7 +205,7 @@ showFullScreenDialog({
     barrierLabel:
         MaterialLocalizations.of(navigator.context).modalBarrierDismissLabel,
     barrierColor:
-        backgroundColor ?? Theme.of(navigator.context).backgroundColor,
+        backgroundColor ?? Theme.of(navigator.context).colorScheme.background,
     useSafeArea: useSafeArea,
     builder: (context) => ConstrainedBox(
       constraints: const BoxConstraints.expand(),

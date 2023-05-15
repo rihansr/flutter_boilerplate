@@ -1,35 +1,41 @@
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import '../shared/colors.dart';
+import '../utils/extensions.dart';
 
 class CounterBadge extends StatelessWidget {
   const CounterBadge({
     Key? key,
     required this.child,
+    this.alignment,
     this.count = 0,
-    this.position,
   }) : super(key: key);
 
-  final int count;
   final Widget child;
-  final BadgePosition? position;
+  final AlignmentDirectional? alignment;
+
+  final int count;
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Badge(
-      showBadge: count != 0,
-      badgeStyle: BadgeStyle(
-        badgeColor: theme.primaryColor,
-        padding: const EdgeInsets.all(5),
-      ),
-      badgeContent: Text(
-        '$count',
-        style: theme.textTheme.bodyText1!.copyWith(
-          color: theme.primaryColorLight,
-          fontSize: 11,
+      backgroundColor: context.colorScheme.primary,
+      isLabelVisible: count != 0,
+      largeSize: 16,
+      label: SizedBox(
+        width: 8,
+        child: FittedBox(
+          alignment: Alignment.center,
+          child: Text(
+            '$count',
+            style: theme.textTheme.bodyLarge!.copyWith(
+              fontSize: 11,
+              color: ColorPalette.light().primaryLight,
+            ),
+          ),
         ),
       ),
-      position: position ?? BadgePosition.topEnd(end: 2, top: 6),
+      alignment: alignment,
       child: child,
     );
   }

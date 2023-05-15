@@ -48,7 +48,7 @@ class DropdownWidget<T> extends StatefulWidget {
     this.itemBuilder,
     this.selectedItemBuilder,
     this.margin = const EdgeInsets.symmetric(vertical: 8),
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10.75),
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     this.fontSize,
     this.dense = true,
     this.hintWidget,
@@ -115,14 +115,14 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
               widget.hint ?? '',
               maxLines: widget.maxLines,
               style: widget.hintStyle ??
-                  context.textTheme.subtitle1?.copyWith(
+                  context.textTheme.titleMedium?.copyWith(
                     color: widget.hintColor ?? context.theme.hintColor,
                     fontSize: widget.fontSize,
                     fontWeight: widget.fontWeight,
                   ),
             ),
         value: widget.maintainState ? selectedItem : widget.value,
-        style: (widget.textStyle ?? context.textTheme.bodyText1)?.copyWith(
+        style: (widget.textStyle ?? context.textTheme.bodyLarge)?.copyWith(
           color: widget.fontColor,
           fontSize: widget.fontSize,
           fontWeight: widget.fontWeight,

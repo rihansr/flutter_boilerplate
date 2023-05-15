@@ -11,16 +11,16 @@ class GridViewBuilder<T> extends StatelessWidget {
   final EdgeInsets? spacing;
   final double? horizontalSpacing;
   final double? verticalSpacing;
-  final double childSpacing;
+  final double itemSpacing;
   final double? crossAxisSpacing;
   final double? mainAxisSpacing;
-  final double childAspectRatio;
+  final double itemAspectRatio;
   final ScrollPhysics? scrollPhysics;
   final bool isLoading;
   final Future<void> Function()? onRefresh;
   final Function()? onStartListener;
   final Function()? onEndListener;
-  final Function(T?)? onChildSelected;
+  final Function(T?)? onItemSelected;
 
   const GridViewBuilder({
     Key? key,
@@ -32,13 +32,13 @@ class GridViewBuilder<T> extends StatelessWidget {
     this.height,
     this.width,
     this.spacing,
-    this.childSpacing = 0,
+    this.itemSpacing = 0,
     this.crossAxisSpacing,
     this.mainAxisSpacing,
-    this.childAspectRatio = 1.0,
+    this.itemAspectRatio = 1.0,
     this.scrollPhysics,
     this.isLoading = false,
-    this.onChildSelected,
+    this.onItemSelected,
     this.horizontalSpacing,
     this.verticalSpacing,
     this.onRefresh,
@@ -64,15 +64,15 @@ class GridViewBuilder<T> extends StatelessWidget {
       itemCount: children.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: spanCount,
-        crossAxisSpacing: crossAxisSpacing ?? childSpacing,
-        mainAxisSpacing: mainAxisSpacing ?? childSpacing,
-        childAspectRatio: childAspectRatio,
+        crossAxisSpacing: crossAxisSpacing ?? itemSpacing,
+        mainAxisSpacing: mainAxisSpacing ?? itemSpacing,
+        childAspectRatio: itemAspectRatio,
       ),
       itemBuilder: (_, i) {
         return InkWell(
           onTap: () => {
             if (children.isNotEmpty && children[i] != null)
-              onChildSelected?.call(children[i])
+              onItemSelected?.call(children[i])
           },
           child: builder(children[i], i),
         );

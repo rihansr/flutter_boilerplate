@@ -60,7 +60,7 @@ class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       centerTitle: centerTitle,
       titleSpacing: 0,
-      backgroundColor: backgroundColor ?? theme.backgroundColor,
+      backgroundColor: backgroundColor ?? theme.colorScheme.background,
       leading: automaticallyImplyLeading || leading != null
           ? AppBarIconButton(
               icon: leading ?? AppIcons.arrow_back,
@@ -83,7 +83,7 @@ class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
                     title ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: titleStyle ?? theme.textTheme.headline6,
+                    style: titleStyle ?? theme.textTheme.titleLarge,
                   ),
           if (subtitle != null)
             Padding(
@@ -94,7 +94,7 @@ class CustomizedAppBar extends StatelessWidget implements PreferredSizeWidget {
                       subtitle ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: subtitleStyle ?? theme.textTheme.subtitle2,
+                      style: subtitleStyle ?? theme.textTheme.titleSmall,
                     ),
             ),
         ],

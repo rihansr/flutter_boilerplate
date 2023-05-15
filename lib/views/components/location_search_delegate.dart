@@ -18,7 +18,7 @@ class LocationSearchDelegate extends SearchDelegate {
   String? get searchFieldLabel => string().searchYourLocation;
 
   @override
-  TextStyle? get searchFieldStyle => themeConfig.textTheme.bodyText2?.copyWith(
+  TextStyle? get searchFieldStyle => themeConfig.textTheme.bodyMedium?.copyWith(
         color: themeConfig.theme.hintColor,
       );
 
@@ -66,7 +66,7 @@ class LocationSearchDelegate extends SearchDelegate {
                     ),
                   )
                 : Container(
-                    color: Theme.of(context).backgroundColor,
+                    color: Theme.of(context).colorScheme.background,
                     margin: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 20),
                     child: ListViewBuilder<Location>(
@@ -94,7 +94,7 @@ class LocationSearchDelegate extends SearchDelegate {
                                     .sublist(2, splittedAddress.length)
                                     .join(', ')
                                 : location?.name ?? '',
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           subtitle: splittedAddress.length > 2
                               ? Padding(
@@ -102,7 +102,7 @@ class LocationSearchDelegate extends SearchDelegate {
                                   child: Text(
                                     splittedAddress.sublist(0, 2).join(', '),
                                     style:
-                                        Theme.of(context).textTheme.bodyText2,
+                                        Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 )
                               : null,

@@ -139,7 +139,7 @@ class InputField extends StatelessWidget {
               child: Text(
                 title ?? '',
                 textAlign: titleAlign,
-                style: titleStyle ?? theme.textTheme.bodyText2,
+                style: titleStyle ?? theme.textTheme.bodyMedium,
               ),
             ),
           if (subtitle?.isNotEmpty ?? false)
@@ -148,7 +148,7 @@ class InputField extends StatelessWidget {
               child: Text(
                 subtitle ?? '',
                 textAlign: subtitleAlign,
-                style: subtitleStyle ?? theme.textTheme.subtitle1,
+                style: subtitleStyle ?? theme.textTheme.titleMedium,
               ),
             ),
           TextFormField(
@@ -157,12 +157,6 @@ class InputField extends StatelessWidget {
             autofocus: autoFocus,
             enableInteractiveSelection: selectable,
             textCapitalization: textCapitalization,
-            toolbarOptions: ToolbarOptions(
-              paste: selectable,
-              cut: selectable,
-              copy: selectable,
-              selectAll: selectable,
-            ),
             onChanged: (value) {
               onTyping?.call(value);
               int length = value.trim().length;
@@ -184,7 +178,7 @@ class InputField extends StatelessWidget {
             obscureText: obscureText,
             minLines: minLines,
             maxLines: maxLines,
-            style: (textStyle ?? theme.textTheme.bodyText1)?.copyWith(
+            style: (textStyle ?? theme.textTheme.bodyLarge)?.copyWith(
               color: fontColor,
               fontSize: fontSize,
               fontWeight: fontWeight,
@@ -193,11 +187,11 @@ class InputField extends StatelessWidget {
               filled: true,
               fillColor: fillColor ?? theme.disabledColor,
               hintText: hint,
-              counterStyle: theme.textTheme.subtitle2,
-              errorStyle:
-                  theme.textTheme.subtitle2?.copyWith(color: theme.errorColor),
+              counterStyle: theme.textTheme.titleSmall,
+              errorStyle: theme.textTheme.titleSmall
+                  ?.copyWith(color: theme.colorScheme.error),
               hintStyle: hintStyle ??
-                  theme.textTheme.subtitle1?.copyWith(
+                  theme.textTheme.titleMedium?.copyWith(
                     color: hintColor ?? theme.hintColor,
                     fontSize: hintSize ?? fontSize,
                     fontWeight: hintWeight ?? fontWeight,
@@ -219,8 +213,8 @@ class InputField extends StatelessWidget {
               enabledBorder: boder(theme.dividerColor),
               border: boder(theme.dividerColor),
               focusedBorder: boder(theme.primaryColor),
-              errorBorder: boder(theme.errorColor),
-              focusedErrorBorder: boder(theme.errorColor),
+              errorBorder: boder(theme.colorScheme.error),
+              focusedErrorBorder: boder(theme.colorScheme.error),
             ),
           ),
         ],
