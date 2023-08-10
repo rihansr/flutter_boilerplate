@@ -28,7 +28,7 @@ class AppSettings {
 
   bool isDarkTheme([Settings? settings]) =>
       (settings ?? this.settings.value).themeMode == ThemeMode.system
-          ? SchedulerBinding.instance.window.platformBrightness ==
+          ? SchedulerBinding.instance.platformDispatcher.platformBrightness ==
               Brightness.dark
           : (settings ?? this.settings.value).themeMode == ThemeMode.dark;
 

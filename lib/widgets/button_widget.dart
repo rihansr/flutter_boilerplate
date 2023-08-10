@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class Button<T> extends StatelessWidget {
   final T? shape;
   final Color? fillColor;
+  final Gradient? gradient;
   final Color borderTint;
   final double borderSize;
   final double radius;
@@ -34,6 +35,7 @@ class Button<T> extends StatelessWidget {
     this.shape,
     this.label,
     this.fillColor,
+    this.gradient,
     this.borderTint = Colors.transparent,
     this.radius = 6,
     this.width,
@@ -69,9 +71,11 @@ class Button<T> extends StatelessWidget {
       fontWeight: fontWeight,
     );
 
-    Color? fillColor = disable
-        ? Theme.of(context).dividerColor
-        : this.fillColor ?? Theme.of(context).primaryColor;
+    Color? fillColor = gradient == null
+        ? disable
+            ? Theme.of(context).dividerColor
+            : this.fillColor ?? Theme.of(context).primaryColor
+        : null;
 
     return Padding(
       padding: margin,
@@ -96,6 +100,7 @@ class Button<T> extends StatelessWidget {
                     ),
                   ),
                   color: fillColor,
+                  gradient: gradient,
                 )
               : shape is BoxShape
                   ? BoxDecoration(
@@ -108,10 +113,12 @@ class Button<T> extends StatelessWidget {
                         width: borderSize,
                       ),
                       color: fillColor,
+                      gradient: gradient,
                     )
                   : ShapeDecoration(
                       shape: shape as ShapeBorder,
                       color: fillColor,
+                      gradient: gradient,
                     ),
           child: Wrap(
             direction: direction,
