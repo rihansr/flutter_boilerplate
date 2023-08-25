@@ -24,23 +24,33 @@ class LocationViewModel extends BaseViewModel {
   Address? currentAddress = sharedPrefs.address;
 
   Future<void> findLocation({
-    notifyChanges = false,
+    autoListen = false,
     setAsDefault = false,
     Function(LatLng)? onChange,
   }) async {
-    if (!notifyChanges) setBusy(true, key: 'fetching_location');
-    await LocationService(
-      (position) async {
-        LatLng latLng = LatLng(position.latitude, position.longitude);
-        onChange?.call(latLng);
-        this
-          ..currentPosition = latLng
-          ..currentAddress = await latLng.address;
-        setAsDefault ? setDefaultAddress(currentAddress) : notifyListeners();
-      },
-      listen: notifyChanges,
-    ).invoke;
-    if (!notifyChanges) setBusy(false, key: 'fetching_location');
+    if (await locationService.requestPermission()) {
+      autoListen
+          ? locationService.listenLocation((position) async {
+              LatLng latLng = LatLng(position.latitude, position.longitude);
+              onChange?.call(latLng);
+              this
+                ..currentPosition = latLng
+                ..currentAddress = await latLng.address;
+              setAsDefault
+                  ? setDefaultAddress(currentAddress)
+                  : notifyListeners();
+            })
+          : locationService.fetchLocation((position) async {
+              LatLng latLng = LatLng(position.latitude, position.longitude);
+              onChange?.call(latLng);
+              this
+                ..currentPosition = latLng
+                ..currentAddress = await latLng.address;
+              setAsDefault
+                  ? setDefaultAddress(currentAddress)
+                  : notifyListeners();
+            });
+    }
   }
 
   Address defaultAddress = sharedPrefs.address ?? const Address(id: 0);

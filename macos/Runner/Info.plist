@@ -38,8 +38,10 @@
 		<string>This app requires access to the camera.</string>
 
 		<!-- Location Access -->
-		<key>NSLocationUsageDescription</key>
-		<string>This app needs access to location.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to location when open.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app needs access to location when in the background.</string>
 		<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 		<dict>
 			<key>AIzaSyDhwLOnDsCX4HdGqt0HI8Lmi3cTkB-gFhk</key>
